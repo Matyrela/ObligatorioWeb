@@ -1,0 +1,49 @@
+.room-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.room-item .right {
+  margin-left: auto;
+}
+
+.room-item .playerCount {
+  margin-right: 20px;
+}
+
+
+.green-dot {
+  width: 12px;
+  height: 12px;
+  background-color: green;
+  border-radius: 50%;
+  margin-right: 5px;
+  display: inline-block;
+}
+
+.red-dot {
+  width: 12px;
+  height: 12px;
+  background-color: red;
+  border-radius: 50%;
+  margin-right: 5px;
+  display: inline-block;
+}
+
+
+.connection-dot {
+  display:inline-block;
+}
+
+.connection-text {
+  display: inline-block;
+  font-family: 'Arial', sans-serif; /* Cambia la fuente de acuerdo a tu preferencia */
+  font-size: 18px; /* Tamaño de fuente */
+}
+
+.connection-div {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}

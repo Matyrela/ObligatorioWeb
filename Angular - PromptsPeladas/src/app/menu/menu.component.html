@@ -1,0 +1,55 @@
+<div class="container">
+  <div class="row">
+    <div class="col-sm-6 mx-auto">
+      <h1 class="text-center">Prompts - Peladas</h1>
+      <div class="bg-success text-center" *ngIf="conStatus == clientStatus.waiting">
+        <h2>Conectándote a: {{roomName}}</h2>
+      </div>
+      <hr>
+      <h2 class="text-center">Unirse a una sala</h2>
+      <br>
+
+      <ul class="list-group">
+        <li class="list-group-item active text-center">Salas públicas</li>
+        <li class="list-group-item text-center" *ngIf="publicRooms.length == 0">No hay salas disponibles actualmente</li>
+        <li class="list-group-item room-item" *ngFor="let room of publicRooms">
+          {{room.name}}
+          <div class="right">
+            <span class="playerCount">{{room.players.length}} / {{room.maxPlayers}}</span>
+            <button class="btn btn-info" (click)="connectRoom(room)" *ngIf="conStatus == clientStatus.disconnected">
+              Unirse
+            </button>
+          </div>
+        </li>
+      </ul>
+
+      <br>
+
+      <div class="input-group mb-3">
+        <input type="text" class="form-control" placeholder="Código de la sala privada" aria-describedby="basic-addon2">
+        <div class="input-group-append">
+          &nbsp;<button class="btn btn-info" type="button" [disabled]="conStatus != clientStatus.disconnected">Unirse</button>
+        </div>
+      </div>
+
+      <hr>
+      <h2 class="text-center">Crear una sala</h2>
+      <br>
+
+      <div class="input-group mb-3">
+        <input type="text" [(ngModel)]="roomName" class="form-control" placeholder="Nombre de la sala" (keyup)="console.log(roomName)">
+        <div class="input-group-append">
+          &nbsp;<button class="btn btn-success" type="button" [disabled]='conStatus != clientStatus.disconnected || roomName === ""' (click)="createRoom(roomName)">Crear y unirse</button>
+        </div>
+      </div>
+
+      <hr>
+
+    </div>
+  </div>
+</div>
+
+<div class="connection-div">
+  <div class="connection-text">Estado del servidor: &nbsp;</div>
+  <div class="connection-dot" [ngClass]="{'green-dot': isServerConnected, 'red-dot': !isServerConnected}"></div>
+</div>
