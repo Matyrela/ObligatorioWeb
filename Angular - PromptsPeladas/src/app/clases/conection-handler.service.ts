@@ -13,7 +13,7 @@ export class ConectionHandlerService {
 
   constructor() {
     console.log('Connecting to Java Spring server...');
-    this.webSocket = new WebSocket('ws://localhost:8080/public');
+    this.webSocket = new WebSocket('ws://localhost:8080/plublic');
 
     this.webSocket.onopen = () => {
       console.log('Conectado al servidor');
