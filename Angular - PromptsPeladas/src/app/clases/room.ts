@@ -3,11 +3,11 @@ export class Room {
     id: number;
     maxPlayers: number;
     players: Array<string>;
-    constructor(id: number, name: string, maxPlayers: number, players: Array<string>) {
+    constructor(id: number, name: string, players: Array<string>) {
         this.id = id;
         this.name = name;
         this.players = players;
-        this.maxPlayers = maxPlayers;
+        this.maxPlayers = 10;
     }
 
 

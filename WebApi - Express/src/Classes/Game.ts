@@ -1,16 +1,20 @@
 import { Player } from "./Player";
 
 export class Game {
-    id: number;
+    
+    id: string;
     name: string;
     players: Player[];
     status : Status;
 
-    constructor(name : string, id : number) {
+    constructor(name : string, id : string) {
         this.id = id;
         this.name = name;
         this.players = new Array<Player>();
         this.status = Status.WAITING;
+    }
+    public addPlayer(user: Player) {
+        this.players.push(user);
     }
 }
 export enum Status {

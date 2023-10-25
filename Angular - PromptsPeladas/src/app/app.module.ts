@@ -5,19 +5,29 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MenuComponent } from './menu/menu.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import {FormsModule} from "@angular/forms";
+import { FormsModule} from "@angular/forms";
+import { RouterModule } from '@angular/router';
+import { HttpClientModule } from '@angular/common/http';
+import { LoginComponent } from './login/login.component';
+import { CreateActivityComponent } from './create-activity/create-activity.component';
+import { RoomComponent } from './room/room.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    MenuComponent
+    MenuComponent,
+    LoginComponent,
+    CreateActivityComponent,
+    RoomComponent,
   ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        NgbModule,
-        FormsModule
-    ],
+  imports: [
+      BrowserModule,
+      AppRoutingModule,
+      NgbModule,
+      RouterModule,
+      FormsModule,
+      HttpClientModule
+  ],
   providers: [],
   bootstrap: [AppComponent]
 })

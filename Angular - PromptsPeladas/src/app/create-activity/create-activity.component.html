@@ -1,0 +1,26 @@
+<div *ngIf="activity">
+    <div class="activity-name"> 
+        <input type="text" [(ngModel)]="activity.name" placeholder="Name">
+    </div>
+    <hr>
+    <div class="activity-new">
+        <input type="text" [(ngModel)]="activity.description" placeholder="New Activity">
+        <button (click)="addActivity()">+</button>
+    </div>
+
+    <div class="activity-list">
+        <ul>
+            <li *ngFor="let activity of activities">
+                <button (click)="deleteActivity(activity)">X</button>
+                <span>{{activity}}</span>
+                
+            </li>
+        </ul>
+    </div>
+
+    <div class="activity-return-menu">
+        <button (click)="returnToMenu()">Volver al Menu</button>
+    </div>
+
+
+</div>
