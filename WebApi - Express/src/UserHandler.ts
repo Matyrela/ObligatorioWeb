@@ -13,8 +13,20 @@ export class UserHandler{
         return UserHandler.instance;
     }
 
-    getPlayer(token: string): Player {
-        return this.userToken.get(token) as unknown as Player;
+    getPlayer(token: string): Player | null {
+        let player: Player | null = null;
+        let name : string = '';
+        Array.from(this.userToken.keys()).forEach(element => {
+            if (this.userToken.get(element) == token)
+                name = element;
+        });
+        if (name != ''){
+            GameManager.getInstance().getPlayers().forEach(element => {
+                if (element.name == name)
+                    player = element;
+            });
+        }
+        return player;
     }
 
     constructor(app: Express){
@@ -37,7 +49,6 @@ export class UserHandler{
                             this.userToken.set(userName, token)
                     }
                     res.send({'token' : token , 'login' : true });
-                    console.log(token);
                     return;
                 }
             }
@@ -69,13 +80,10 @@ export class UserHandler{
                 try {
                     let decoded = jwt.verify(token, 'pelela');
                     let userName = decoded.userName;
-                    console.log(userName + " : " + token);
                     if(this.userToken.get(userName) == token){
-                        console.log("userName : " + userName + " token : " + token + " valid");
                         res.send({'valid' : true});
                         return;
                     }
-                    console.log("userName : " + userName + " token : " + token + " invalid");
                 } catch(err) {
                     console.log(err);
                 }
@@ -83,7 +91,7 @@ export class UserHandler{
             res.send({'valid' : false});
         });
 
-        app.get('/api/user/game', (req, res) => {
+        app.post('/api/user/game', (req, res) => {
             let player = req.body.player as unknown as Player;
             let code = GameManager.getInstance().checkPlayerInGame(player);
             res.send({'code' : code });

@@ -25,25 +25,23 @@ export class GameManager {
         this.players.set(player, "INVALID");
         return true;
     }
-    
-    createGame(roomName: string, player: Player) : Game {
+    getPlayers(): Array<Player> {
+        return Array.from(this.players.keys());
+    }
+
+    createGame(roomName: string, player: Player): Game {
         let id = Math.random().toString(32).substring(4, 8).toUpperCase();
 
-        let newGame : Game = new Game(roomName, id);
+        let newGame: Game = new Game(roomName, id);
 
         this.game.set(id, newGame);
         newGame.addPlayer(player);
         this.players.set(player, id);
-
-        console.log("Created game : " + this.game.get(id));
         return newGame;
     }
 
     checkPlayerInGame(player: Player) : string {
-        if(!this.players.has(player)) {
-            return "INVALID";
-        }else{
-            return this.players.get(player) as string;
-        }
+        let code : string = this.players.get(player) as string;
+        return code;
     }
 }

@@ -41,11 +41,9 @@ export class MenuComponent {
   connectRoom(code: string) {
     let token = localStorage.getItem('token');
     if(token != null && token != undefined && token != 'null'){
-      this.http.get(env.baseURL + '/game/join', {
-        params: {
-          token: token,
-          code: code
-        }
+      this.http.post(env.baseURL + '/game/join', {
+        token: token,
+        code: code
       }).subscribe((data: { [key: string]: any }) => {
         if(data['joined']){
           console.log('Conectado a la sala');
