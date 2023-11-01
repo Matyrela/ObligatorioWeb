@@ -37,11 +37,12 @@ export class GameHandler {
             let code = req.body.code as string;
             let token = req.body.token as string;
             if(code != null && code != "" && code != undefined && code.toString().length > 0) {
-                let game = GameManager.getInstance().getGame(code);
+                let gameManager = GameManager.getInstance();
+                let game = gameManager.getGame(code);
                 if(game != undefined && game != null) {
                     let player = UserHandler.getInstance().getPlayer(token);
                     if (player != null) {
-                        game.addPlayer(player);
+                        gameManager.joinGame(player, game);
                         res.send({'joined' : true});
                     }
                 }

@@ -22,7 +22,7 @@ new GameHandler(app, httpServer);
 new UserHandler(app);
 
 app.get('/api/ping', (req, res) => {
-    res.send('pong');
+    res.send({'ping' : 'pong'});
 });
 
 httpServer.listen(PORT, () => {

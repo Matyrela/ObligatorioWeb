@@ -11,7 +11,7 @@ const routes: Routes = [
   { path: 'menu', component: MenuComponent, canActivate: [AuthGuard]},
   { path: 'room', component: RoomComponent, canActivate: [AuthGuard]},
   { path: 'login', component: LoginComponent},
-];0
+];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

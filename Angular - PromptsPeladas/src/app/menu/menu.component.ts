@@ -18,6 +18,13 @@ export class MenuComponent {
   
   constructor(private http: HttpClient, private router: Router) {}
   
+  ngOnInit(): void {
+    this.http.get(env.baseURL + '/ping').subscribe((data: { [key: string]: any }) => {
+      if(data['ping'] == 'pong'){
+        this.isServerConnected = true;
+      }
+    });
+  }
   createRoom(name: string) {
     this.conStatus = clientStatus.waiting;
     this.roomName = name;
@@ -41,7 +48,7 @@ export class MenuComponent {
   connectRoom(code: string) {
     let token = localStorage.getItem('token');
     if(token != null && token != undefined && token != 'null'){
-      this.http.post(env.baseURL + '/game/join', {
+      this.http.post(env.baseURL + '/game/join', {  
         token: token,
         code: code
       }).subscribe((data: { [key: string]: any }) => {
