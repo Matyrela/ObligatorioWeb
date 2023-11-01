@@ -1,4 +1,5 @@
 export const env = {
     production: false,
-    baseURL: 'http://10.13.225.82:7777/api'
+    baseURL: 'http://10.13.142.185:7777/api',
+    WebSocket: "ws://10.13.142.185:7777/api/game/ws/"
 }

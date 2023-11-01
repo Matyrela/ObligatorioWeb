@@ -34,7 +34,6 @@ export class UserHandler{
 
         this.userToken = new Map<string, string>();
         this.userPassword = new Map<string, string>();
-        
 
         app.post('/api/user/login', (req, res) => {
             let userName = req.body.userName as string;
