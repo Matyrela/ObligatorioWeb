@@ -8,9 +8,9 @@
       <hr>
       <h2 class="text-center">Unirse a una sala</h2>
       <div class="input-group mb-3">
-        <input type="text" class="form-control" placeholder="Código de la sala" aria-describedby="basic-addon2">
+        <input type="text" class="form-control" placeholder="Código de la sala" aria-describedby="basic-addon2" #input>
         <div class="input-group-append">
-          &nbsp;<button class="btn btn-info" type="button" [disabled]="conStatus != clientStatus.disconnected">Unirse</button>
+          &nbsp;<button class="btn btn-info" type="button" [disabled]="conStatus != clientStatus.disconnected" (click)="connectRoom(input.value)">Unirse</button>
         </div>
       </div>
 

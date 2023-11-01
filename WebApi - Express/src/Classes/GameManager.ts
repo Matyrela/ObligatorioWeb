@@ -35,9 +35,12 @@ export class GameManager {
         let newGame: Game = new Game(roomName, id);
 
         this.game.set(id, newGame);
-        newGame.addPlayer(player);
-        this.players.set(player, id);
+        this.joinGame(player, newGame);
         return newGame;
+    }
+    joinGame(player : Player, game : Game){
+        game.addPlayer(player);
+        this.players.set(player, game.id);
     }
 
     checkPlayerInGame(player: Player) : string {

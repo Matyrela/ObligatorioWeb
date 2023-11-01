@@ -16,8 +16,8 @@ const PORT = 7777;
 new GameHandler(app);
 new UserHandler(app);
 
-app.get('/ping', (req, res) => {
-    res.send('pong')
+app.get('/api/ping', (req, res) => {
+    res.send({'ping' : 'pong'});
 });
 
 app.listen(PORT, () => {
