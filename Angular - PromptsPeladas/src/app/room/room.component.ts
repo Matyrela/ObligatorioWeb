@@ -12,7 +12,22 @@ export class RoomComponent {
   code : string = "";
   roomName : string = "";
   conStatus : string = "";
+
+  ws : WebSocket = new WebSocket(env.WebSocket + this.code);
   ngOnInit() {
+    this.ws.onopen = () => {
+      console.log('WebSocket Client Connected to ' + this.code);
+    };
+
+    this.ws.onmessage = (message) => {
+      console.log("WS SEND: " + message.data);
+    }
+
+    this.ws.send(JSON.stringify({
+      'name' : localStorage.getItem('name')
+    }));
+    
+
     this.http.post(
       env.baseURL + '/game/get', {
         token : localStorage.getItem('token')
