@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { env } from '../enviroment';
+import { Router } from '@angular/router';
+
 
 @Component({
   selector: 'app-room',
@@ -8,10 +10,11 @@ import { env } from '../enviroment';
   styleUrls: ['./room.component.css']
 })
 export class RoomComponent {
-  constructor (private http: HttpClient) {}
+  constructor (private http: HttpClient, private router: Router) {}
   code : string = "";
   roomName : string = "";
   conStatus : string = "";
+  
   ngOnInit() {
     this.http.post(
       env.baseURL + '/game/get', {
@@ -23,6 +26,13 @@ export class RoomComponent {
       });
 
     }
-  
+    
+    quitRoom() {
+      this.http.post(env.baseURL + '/game/quit', {
+        token : localStorage.getItem('token')
+      }).subscribe((data: { [key: string]: any }) => {
+        this.router.navigate(['menu']);
+      });
+    }
 
 }

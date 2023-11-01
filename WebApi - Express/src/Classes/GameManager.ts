@@ -39,12 +39,30 @@ export class GameManager {
         return newGame;
     }
     joinGame(player : Player, game : Game){
-        game.addPlayer(player);
+        if (!game.players.includes(player)) {
+            game.addPlayer(player);
+        }
         this.players.set(player, game.id);
     }
 
     checkPlayerInGame(player: Player) : string {
         let code : string = this.players.get(player) as string;
         return code;
+    }
+    removePlayer(player: Player) {
+        let code = this.players.get(player);
+        console.log(code);
+        if (code != undefined) {
+            let game = this.game.get(code);
+            if (game != undefined) {
+                console.log('Player removed from game');
+                game.removePlayer(player);
+                this.players.delete(player);
+                if (game.players.length == 0) {
+                    this.game.delete(game.id);
+                }
+            }
+        }
+        
     }
 }

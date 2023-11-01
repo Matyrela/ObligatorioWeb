@@ -2,6 +2,7 @@ import { Player } from "./Player";
 
 export class Game {
     
+    
     id: string;
     name: string;
     players: Player[];
@@ -15,6 +16,11 @@ export class Game {
     }
     public addPlayer(user: Player) {
         this.players.push(user);
+    }
+    public removePlayer(player: Player) {
+        this.players = this.players.filter((value) => {
+            return value != player;
+        });
     }
 }
 export enum Status {

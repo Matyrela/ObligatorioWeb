@@ -24,6 +24,13 @@ export class MenuComponent {
         this.isServerConnected = true;
       }
     });
+    this.http.post(env.baseURL + '/game/reconnect', {
+      token: localStorage.getItem('token')
+    }).subscribe((data: { [key: string]: any }) => {
+      if(data['code'] != undefined && data['code'] != null && data['code'] != 'INVALID'){
+        this.connectRoom(data['code']);
+      }
+    });
   }
   createRoom(name: string) {
     this.conStatus = clientStatus.waiting;
