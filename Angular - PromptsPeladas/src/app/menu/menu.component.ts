@@ -11,7 +11,6 @@ import { Router } from '@angular/router';
   styleUrls: ['./menu.component.css']
 })
 export class MenuComponent {
-  conStatus: clientStatus = clientStatus.disconnected;
   roomName: string = "";
   roomId: string = "";
   isServerConnected: boolean = false;
@@ -27,6 +26,7 @@ export class MenuComponent {
         this.isServerConnected = true;
       }
     });
+    
     this.http.post(env.baseURL + '/game/reconnect', {
       token: localStorage.getItem('token')
     }).subscribe((data: { [key: string]: any }) => {
@@ -34,9 +34,10 @@ export class MenuComponent {
         this.connectRoom(data['code']);
       }
     });
+
+
   }
   createRoom(name: string) {
-    this.conStatus = clientStatus.waiting;
     this.roomName = name;
     console.log('Creating room ' + name + '...');
     
@@ -46,16 +47,16 @@ export class MenuComponent {
     }).subscribe((data: { [key: string]: any }) => {
       if(data['gameCreated']){
         console.log('Sala creada con exito');
-        this.conStatus = clientStatus.connected;
         this.connectRoom(data['code']);
       }else{
         console.log('Error al crear la sala');
-        this.conStatus = clientStatus.disconnected;
       }
     }); 
   }
   
   connectRoom(code: string) {
+    code = code.toUpperCase();
+    
     let token = localStorage.getItem('token');
     if(token != null && token != undefined && token != 'null'){
       this.http.post(env.baseURL + '/game/join', {  
@@ -65,10 +66,8 @@ export class MenuComponent {
         if(data['joined']){
           console.log('Conectado a la sala');
           this.router.navigate(['room']);
-          this.conStatus = clientStatus.connected;
         }else{
           console.log('Error al conectarse a la sala');
-          this.conStatus = clientStatus.disconnected;
         }
       });
     }

@@ -7,3 +7,15 @@
 .title{
     text-align: center;
 }
+
+.chat{
+    background-color: #f5f5f5;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.roomData{
+    text-align: center;
+    margin-top: 50%;
+}

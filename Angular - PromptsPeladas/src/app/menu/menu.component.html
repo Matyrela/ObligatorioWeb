@@ -2,26 +2,21 @@
   <div class="row">
     <div class="col-sm-6 mx-auto">
       <h1 class="text-center">Prompts - Peladas</h1>
-      <div class="bg-success text-center" *ngIf="conStatus == clientStatus.waiting">
-        <h2>Conectándote a: {{roomName}}</h2>
-      </div>
       <hr>
       <h2 class="text-center">Unirse a una sala</h2>
       <div class="input-group mb-3">
         <input type="text" class="form-control" placeholder="Código de la sala" aria-describedby="basic-addon2" #input>
         <div class="input-group-append">
-          &nbsp;<button class="btn btn-info" type="button" [disabled]="conStatus != clientStatus.disconnected" (click)="connectRoom(input.value)">Unirse</button>
+          &nbsp;<button class="btn btn-info" type="button" (click)="connectRoom(input.value)">Unirse</button>
         </div>
       </div>
-
       <hr>
       <h2 class="text-center">Crear una sala</h2>
       <br>
-
       <div class="input-group mb-3">
         <input type="text" [(ngModel)]="roomName" class="form-control" placeholder="Nombre de la sala" (keyup)="console.log(roomName)">
         <div class="input-group-append">
-          &nbsp;<button class="btn btn-success" type="button" [disabled]='conStatus != clientStatus.disconnected || roomName === ""' (click)="createRoom(roomName)">Crear y unirse</button>
+          &nbsp;<button class="btn btn-success" type="button" [disabled]='roomName === ""' (click)="createRoom(roomName)">Crear y unirse</button>
         </div>
       </div>
 

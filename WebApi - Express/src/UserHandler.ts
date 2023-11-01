@@ -47,11 +47,11 @@ export class UserHandler{
                         if(token != undefined)
                             this.userToken.set(userName, token)
                     }
-                    res.send({'token' : token , 'login' : true });
+                    res.send({'token' : token , 'login' : true }).status(200);
                     return;
                 }
             }
-            res.send({'token' : 'null', 'login' : false});
+            res.send({'token' : 'null', 'login' : false}).status(409);
         });
 
         app.post('/api/user/register', (req, res) => {
@@ -60,7 +60,7 @@ export class UserHandler{
 
             if(!(userName == null || userName == "" || userName == undefined || userName.toString().length <= 0) || !(userPassword == null || userPassword == "" || userPassword == undefined || userPassword.toString().length <= 0)) {
                 if(this.userPassword.get(userName) != undefined){
-                    res.send({'userCreated' : false});
+                    res.send({'userCreated' : false}).status(409);
                     return;
                 }
                 this.userPassword.set(userName ,  userPassword  );
@@ -70,7 +70,7 @@ export class UserHandler{
                 return;   
             }
             
-            res.send({'userCreated' : false});
+            res.send({'userCreated' : false}).status(201);
         });
 
         app.post('/api/user/validate', (req, res) => {
@@ -80,14 +80,14 @@ export class UserHandler{
                     let decoded = jwt.verify(token, 'pelela');
                     let userName = decoded.userName;
                     if(this.userToken.get(userName) == token){
-                        res.send({'valid' : true});
+                        res.send({'valid' : true}).status(200);
                         return;
                     }
                 } catch(err) {
                     console.log(err);
                 }
             }
-            res.send({'valid' : false});
+            res.send({'valid' : false}).status(200);
         });
 
         app.post('/api/user/game', (req, res) => {

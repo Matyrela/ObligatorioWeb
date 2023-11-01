@@ -5,13 +5,7 @@ import { UserHandler } from './UserHandler';
 
 
 export class GameHandler {
-
-    public static gamesNamespace: any;
-
-    constructor(app: Express, ws: any) {
-        
-        GameHandler.gamesNamespace = ws.of("/games/ws");
-
+    constructor(app: Express, ws: any) {    
         app.post('/api/game/create', (req, res) => { 
             let roomGame = req.body.roomName as string;
             let token: string = req.body.token as string;
@@ -19,13 +13,21 @@ export class GameHandler {
 
             let gameCreated;
                 if(roomGame != null && roomGame != "" && roomGame != undefined && roomGame.length > 0 && player != null) {
-                    gameCreated = GameManager.getInstance().createGame(roomGame, player);
+                    gameCreated = GameManager.getInstance().createGame(roomGame, player, ws);
+                }else{
+                    console.log('Error al crear la sala el if grande porque: ');
+                    console.log('roomGame: ' + roomGame);
+                    console.log('player: ' + player);
                 }
             
                 if(gameCreated?.id != null) {
                     res.send({'gameCreated' : true , 'code' : gameCreated.id});
                     return;
-                }  
+                }else{
+                    console.log('Error al crear la sala en gameCreated?.id != null: ');
+                    console.log('gameCreated?.id: ' + gameCreated?.id);
+                }
+
         
             res.send({'gameCreated' : false, 'code' : 'INVALID'});    
         });
@@ -57,7 +59,8 @@ export class GameHandler {
                         'code' : code,
                         'roomName' : game?.name,
                         'players' : game?.players,
-                        'status' : game?.status
+                        'status' : game?.status,
+                        'admin' : game?.adminPlayer
                     });
                     return;
                 }
@@ -79,8 +82,6 @@ export class GameHandler {
             }   
         });
         app.post('/api/game/quit', (req, res) => {
-            console.log('quit');
-
             let token = req.body.token as string;
             let player = UserHandler.getInstance().getPlayer(token);
             let gm = GameManager.getInstance();
@@ -92,6 +93,8 @@ export class GameHandler {
                     return;
                 }
             }
+
+            res.send({"removed" : false})
         });
         
     }   

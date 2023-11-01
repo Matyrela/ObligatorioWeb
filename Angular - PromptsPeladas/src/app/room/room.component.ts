@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { env } from '../enviroment';
 import { io, Socket } from "socket.io-client";
 import { Router } from '@angular/router';
+import * as QRCode from 'qrcode';
 
 @Component({
   selector: 'app-room',
@@ -14,6 +15,7 @@ export class RoomComponent {
   code : string = "";
   roomName : string = "";
   conStatus : string = "";
+  admin : string = "";
 
   ls = localStorage;
 
@@ -34,14 +36,20 @@ export class RoomComponent {
         this.code = data['code'];
         this.roomName = data['roomName'];
         this.conStatus = data['status'];
+        this.admin = data['admin'].name;
 
         this.connWebSocket();
+
+        let qrCanvas = document.getElementById('qrCode')
+        QRCode.toCanvas(qrCanvas,  this.code, function (error: any) {
+          if (error) console.error(error)
+        })
       });
     }
 
   connWebSocket() {
-    this.ws = io(env.WebSocket, {
-      transports: ['websocket'], // Use WebSocket transport
+    this.ws = io(env.WebSocket + this.code , {
+      transports: ['websocket']
     });
 
     this.ws.on('connect', () => {
@@ -51,18 +59,15 @@ export class RoomComponent {
     this.ws.on("playerList", (data: { [key: string]: any }) => {
       this.playerList = new Array<string>();
       data['forEach']((element: any) => {
-        if(element['name'] != localStorage.getItem('userName'))
-          this.playerList.push(element['name']);
-        else
-          this.playerList.push(element['name'] + " (Tú)");
+        this.playerList.push(element['name']);
       });
     });
 
     this.ws.on("chatMessage", (data: { [key: string]: any }) => {
       if(data['name'] == localStorage.getItem('userName'))
-        this.chatMessages.push(data['name'] + " (Tú): " + this.urlFromText(data['message']));
+        this.chatMessages.push(data['name'] + " (Tú): " + data['message']);
       else {
-        this.chatMessages.push(data['name'] + ": " + this.urlFromText(data['message']));
+        this.chatMessages.push(data['name'] + ": " + data['message']);
       }
 
       //CHAT COMMANDS
@@ -79,7 +84,7 @@ export class RoomComponent {
       }
       //END CHAT COMMANDS
 
-      if(!(data["message"] == "30")){
+      if(data["message"] != "30"){
         this.chatPop.play();
       }
 
@@ -87,7 +92,7 @@ export class RoomComponent {
         var element = document.getElementById("chat");
         if(element != null)
           element.scrollTop = element.scrollHeight;
-      }, 100);
+      }, 5);
     });
   }
 
@@ -102,26 +107,18 @@ export class RoomComponent {
     this.message = "";
   }
 
-  urlFromText(text: string) {
-    var urlRegex = /(https?:\/\/[^\s]+)/g;
-    return text.replace(urlRegex, function(url) {
-      return '<a href="' + url + '">' + url + '</a>';
-    })
-    // or alternatively
-    // return text.replace(urlRegex, '<a href="$1">$1</a>')
-  }
   ngOnDestroy() {
     if (this.ws) {
       this.ws.disconnect();
     }
   }
     
-    quitRoom() {
-      this.http.post(env.baseURL + '/game/quit', {
-        token : localStorage.getItem('token')
-      }).subscribe((data: { [key: string]: any }) => {
+  quitRoom() {
+    this.http.post(env.baseURL + '/game/quit', {
+      token : localStorage.getItem('token')
+    }).subscribe((data: { [key: string]: any }) => {
+      if(data['removed'] == true)
         this.router.navigate(['menu']);
-      });
-    }
-
+    });
+  }
 }
