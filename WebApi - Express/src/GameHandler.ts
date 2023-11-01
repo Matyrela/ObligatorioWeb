@@ -63,5 +63,36 @@ export class GameHandler {
                 }
             }
         });
+        app.post('/api/game/reconnect', (req, res) => {
+            let token = req.body.token as string;
+            let player = UserHandler.getInstance().getPlayer(token);
+            let gm = GameManager.getInstance();
+            if (player != null && player != undefined){
+                let code = gm.checkPlayerInGame(player);
+                if (code != 'INVALID') {
+                    let game = gm.getGame(code);
+                    if (game != undefined && game != null) {
+                        res.send({'code' : code});
+                        return;
+                    }
+                }
+            }   
+        });
+        app.post('/api/game/quit', (req, res) => {
+            console.log('quit');
+
+            let token = req.body.token as string;
+            let player = UserHandler.getInstance().getPlayer(token);
+            let gm = GameManager.getInstance();
+            if (player != null && player != undefined){
+                let code = gm.checkPlayerInGame(player);
+                if (code != 'INVALID') {
+                    gm.removePlayer(player);
+                    res.send({"removed" : true})
+                    return;
+                }
+            }
+        });
+        
     }   
 }

@@ -50,4 +50,20 @@ export class GameManager {
         let code : string = this.players.get(player) as string;
         return code;
     }
+    removePlayer(player: Player) {
+        let code = this.players.get(player);
+        console.log(code);
+        if (code != undefined) {
+            let game = this.game.get(code);
+            if (game != undefined) {
+                console.log('Player removed from game');
+                game.removePlayer(player);
+                this.players.delete(player);
+                if (game.players.length == 0) {
+                    this.game.delete(game.id);
+                }
+            }
+        }
+        
+    }
 }

@@ -1,5 +1,6 @@
 export interface Activity {
     id: number;
-    name: string;
+    playerName: string;
     description: string;
+    habilitado: boolean;
 }
