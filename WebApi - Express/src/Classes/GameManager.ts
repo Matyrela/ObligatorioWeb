@@ -38,8 +38,11 @@ export class GameManager {
         this.joinGame(player, newGame);
         return newGame;
     }
+
     joinGame(player : Player, game : Game){
-        game.addPlayer(player);
+        if(!game.players.includes(player)){
+            game.addPlayer(player);
+        }
         this.players.set(player, game.id);
     }
 

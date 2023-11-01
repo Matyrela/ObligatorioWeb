@@ -8,23 +8,23 @@ export class Game {
     players: Player[];
     status : Status;
 
-    public ws: any;
-
     constructor(name : string, id : string) {
         this.id = id;
         this.name = name;
         this.players = new Array<Player>();
         this.status = Status.WAITING;
 
-        this.ws = GameHandler.ws;
+        GameHandler.gamesNamespace.on('connection', (socket: any) => {
+            socket.emit('playerList', this.players);
+            socket.join(this.id);
+            socket.to(this.id).emit('playerList', this.players);
 
-        this.ws.of(`/api/game/ws/${this.id}`).on('connection', (socket: any) => {
-            console.log('a user connected to ' + this.id);
-
-            socket.on('disconnect', () => {
-                console.log('user disconnected' + this.id);
+            socket.on('chatMessage', (data: { [key: string]: any }) => {
+                socket.emit('chatMessage', data);
+                socket.to(this.id).emit('chatMessage', data);
             });
         });
+
     }
     public addPlayer(user: Player) {
         this.players.push(user);

@@ -1,0 +1,9 @@
+.colContent{
+    max-height: 64vh;
+    height: 64vh;
+    overflow-y: auto;
+}
+
+.title{
+    text-align: center;
+}

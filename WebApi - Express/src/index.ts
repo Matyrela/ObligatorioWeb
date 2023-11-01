@@ -18,7 +18,11 @@ const httpServer = createServer(app);
 app.use(cors(corsOptions));
 const PORT = 7777;
 
-new GameHandler(app, httpServer);
+let ws = require('socket.io')(httpServer, {
+    cors: {origin : '*'}
+});
+
+new GameHandler(app, ws);
 new UserHandler(app);
 
 app.get('/api/ping', (req, res) => {

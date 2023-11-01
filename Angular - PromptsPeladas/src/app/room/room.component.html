@@ -1,3 +1,50 @@
-<h1>Por fin estas en la sala {{roomName}}</h1>
-<p>Codigo: {{code}}</p>
-<p>El estado de la conexión es: {{conStatus}}</p>
+<div class="container mt-4">
+  <h1 class="text-center">{{roomName}}</h1>
+
+  <div class="row mt-4">
+      <div class="col-md-4">
+          <div class="card">
+              <div class="card-body">
+                  <h2 class="title">{{roomName}} chat</h2>
+                  <hr>
+                  <div class="card-body colContent" id="chat">
+                    <div class="message text-muted" style="text-align: center;">-- Este es el inicio de la sala {{roomName}} --</div>
+                    <div class="message" *ngFor="let message of chatMessages">{{message}}</div>
+                  </div>
+                  <hr>
+                  <div class="input-group">
+                    <input type="text" class="form-control" [(ngModel)]="message" (keydown.enter)="sendMessage()" placeholder="Escribe tu mensaje...">
+                    <button class="btn btn-primary" (click)="sendMessage()">Enviar</button>
+                  </div>
+                </div>
+          </div>
+      </div>
+
+      <div class="col-md-4">
+          <div class="card">
+              <div class="card-body">
+                  {{code}}
+              </div>
+          </div>
+      </div>
+
+      <div class="col-md-4">
+          <div class="card">
+              <div class="card-body">
+                <h2 class="title">Jugadores</h2>
+                <hr>
+                <div class="card-body colContent">
+                  <ul class="list-group">
+                    <li class="list-group-item" [ngClass]="{'active' : player == (ls.getItem('userName') + ' (Tú)')}" *ngFor="let player of playerList">{{player}}</li>
+                  </ul>
+                </div>
+                <hr>
+                  <div>
+                    <h4 class="title">{{playerList.length}} jugadores</h4>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+

@@ -19,6 +19,9 @@ export class MenuComponent {
   constructor(private http: HttpClient, private router: Router) {}
   
   ngOnInit(): void {
+    document.body.style.background = "rgb(134,203,255)";
+    document.body.style.background = "linear-gradient(90deg, rgba(134,203,255,1) 0%, rgba(180,170,213,1) 50%, rgba(134,203,255,1) 100%)";
+
     this.http.get(env.baseURL + '/ping').subscribe((data: { [key: string]: any }) => {
       if(data['ping'] == 'pong'){
         this.isServerConnected = true;
@@ -62,6 +65,10 @@ export class MenuComponent {
         }
       });
     }
+  }
+
+  ngOnDestroy(): void {
+    document.body.style.background = "white";
   }
 
   protected readonly clientStatus = clientStatus;

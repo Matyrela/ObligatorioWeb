@@ -6,13 +6,11 @@ import { UserHandler } from './UserHandler';
 
 export class GameHandler {
 
-    public static ws: WebSocket;
+    public static gamesNamespace: any;
 
-    constructor(app: Express, httpServer: any) {
-
-        GameHandler.ws = require('socket.io')(httpServer, {
-            cors: {origin : '*'}
-        });
+    constructor(app: Express, ws: any) {
+        
+        GameHandler.gamesNamespace = ws.of("/games/ws");
 
         app.post('/api/game/create', (req, res) => { 
             let roomGame = req.body.roomName as string;
@@ -27,7 +25,6 @@ export class GameHandler {
                 if(gameCreated?.id != null) {
                     res.send({'gameCreated' : true , 'code' : gameCreated.id});
                     return;
-                
                 }  
         
             res.send({'gameCreated' : false, 'code' : 'INVALID'});    

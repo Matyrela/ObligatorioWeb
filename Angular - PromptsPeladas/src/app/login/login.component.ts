@@ -18,7 +18,13 @@ export class LoginComponent {
   userPassword: string = "";
   userPassword2: string = "";
 
+  statusTitle: string = "";
+  status: string = "";
+
   login(){
+    this.statusTitle = "";
+    this.status = "";
+
     this.http.post(
     env.baseURL + '/user/login', {userName: this.userName, userPassword: this.userPassword}
     ).subscribe((data: { [key: string]: any }) => {
@@ -29,25 +35,32 @@ export class LoginComponent {
       }else{
         localStorage.setItem('token', 'null');
         localStorage.setItem('userName', 'null');
-        alert('Login inválido');
+        this.statusTitle = "Error";
+        this.status = "Usuario o contraseña incorrectos";
       }
     });
   }
 
   register(){
+    this.statusTitle = "";
+    this.status = "";
+    
     if(this.userPassword == this.userPassword2){
       this.http.post(
         env.baseURL + '/user/register', {userName: this.userName, userPassword: this.userPassword}
       ).subscribe((data: { [key: string]: any }) => {
         if(data['userCreated'] === true){
-          alert('Usuario creado');
+          this.statusTitle = "Success";
+          this.status = "Usuario creado con éxito";
           this.reg = false;
         }else{
-          alert('Usuario ya existe');
+          this.statusTitle = "Error";
+          this.status = "El usuario ya existe";
         }
       });
     }else{
-      alert('Contraseñas no coinciden');
+      this.statusTitle = "Error";
+      this.status = "Las contraseñas no coinciden";
     }
   }
 
