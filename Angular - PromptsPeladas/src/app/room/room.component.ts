@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { env } from '../enviroment';
 import { io, Socket } from "socket.io-client";
-
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-room',
@@ -14,9 +14,6 @@ export class RoomComponent {
   code : string = "";
   roomName : string = "";
   conStatus : string = "";
-<<<<<<< HEAD
-  
-=======
 
   ls = localStorage;
 
