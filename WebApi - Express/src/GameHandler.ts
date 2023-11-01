@@ -3,8 +3,17 @@ import { GameManager } from './Classes/GameManager';
 import { Player } from './Classes/Player';
 import { UserHandler } from './UserHandler';
 
+
 export class GameHandler {
-    constructor(app: Express) {
+
+    public static ws: WebSocket;
+
+    constructor(app: Express, httpServer: any) {
+
+        GameHandler.ws = require('socket.io')(httpServer, {
+            cors: {origin : '*'}
+        });
+
         app.post('/api/game/create', (req, res) => { 
             let roomGame = req.body.roomName as string;
             let token: string = req.body.token as string;
