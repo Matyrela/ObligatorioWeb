@@ -1,8 +1,5 @@
 <div *ngIf="activity">
-    <div class="activity-name"> 
-        <input type="text" [(ngModel)]="activity.name" placeholder="Name">
-    </div>
-    <hr>
+
     <div class="activity-new">
         <input type="text" [(ngModel)]="activity.description" placeholder="New Activity">
         <button (click)="addActivity()">+</button>
