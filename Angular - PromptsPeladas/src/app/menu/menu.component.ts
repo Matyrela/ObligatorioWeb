@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
-import {Room} from "../clases/room";
+import { Component, ViewChild } from '@angular/core';
 import {clientStatus} from "../clases/EclientStatus";
 import { env } from "../enviroment"
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import * as Toastify from 'toastify-js';
+import { scan } from 'rxjs';
+
 
 @Component({
   selector: 'app-menu',
@@ -17,7 +18,7 @@ export class MenuComponent {
   isServerConnected: boolean = false;
   
   constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute) {}
-  
+
   ngOnInit(): void {
     this.route.paramMap.subscribe((params: ParamMap) => {
       if(params.get('code') != null && params.get('code') != undefined){
@@ -45,6 +46,48 @@ export class MenuComponent {
         this.connectRoom(data['code']);
       }
     });
+    this.videoElement = document.getElementById("videoqr") as HTMLVideoElement;
+  }
+
+  videoElement!: HTMLVideoElement;
+
+  scanQR() {
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+      .then(stream => {
+        // Acceso a la cámara exitoso
+        import('qr-scanner').then(QrScanner => {
+          if (this.videoElement) {
+            this.videoElement.classList.remove("hidden");
+  
+            let scanner = new QrScanner.default(
+              this.videoElement,
+              result => {
+                if (result.data.includes('http') && result.data.includes("menu")) {
+                  scanner.pause();
+                  scanner.stop();
+                  scanner.destroy();
+                  setTimeout(() => {
+                    this.connectRoom(result.data.split("menu/")[1]);
+                  }, 1000);
+                }
+              },
+              {
+                onDecodeError: error => {
+                  console.error(error);
+                },
+                highlightScanRegion: true,
+                highlightCodeOutline: true,
+              }
+            );
+  
+            scanner.start();
+          }
+        });
+      })
+      .catch(error => {
+        console.error('Error al acceder a la cámara:', error);
+        // Puedes manejar el error de acceso a la cámara aquí
+      });
   }
 
   createRoom(name: string) {

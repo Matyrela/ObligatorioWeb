@@ -15,7 +15,6 @@ export class AuthGuard{
     | UrlTree {
       
     let urlStateArray = route.url.toString().split(',');
-    console.log(urlStateArray);
 
     let token = localStorage.getItem("token");
     if(token == undefined || token == null){
