@@ -22,11 +22,13 @@ export class Game {
         this.url = "/games/ws/"+this.id;
 
         ws.of(this.url).on('connection', (socket: any) => {
-            //socket.emit('playerList', this.players);
-            ws.of(this.url).emit('playerList', this.players);
-          
+            ws.of(this.url).emit('playerList', this.players);          
             socket.on('chatMessage', (data: { [key: string]: any }) => {              
                 ws.of(this.url).emit('chatMessage', data);
+            });
+
+            socket.on('clientChangeStatus', (data: { [key: string]: any }) => {              
+                ws.of(this.url).emit('clientChangeStatus', data);
             });
           });
 

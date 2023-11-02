@@ -5,6 +5,8 @@ import { io, Socket } from "socket.io-client";
 import { Router } from '@angular/router';
 import * as QRCode from 'qrcode';
 import * as Toastify from 'toastify-js'
+import { DocumentVisibilityService } from '../clases/document-visibility-service.service';
+import { Player } from '../clases/Player';
 
 @Component({
   selector: 'app-room',
@@ -12,7 +14,7 @@ import * as Toastify from 'toastify-js'
   styleUrls: ['./room.component.css']
 })
 export class RoomComponent {
-  constructor (private http: HttpClient, private router: Router) {}
+  constructor (private http: HttpClient, private router: Router, private documentVisibilityService: DocumentVisibilityService) {}
   code : string = "";
   roomName : string = "";
   conStatus : string = "";
@@ -20,8 +22,8 @@ export class RoomComponent {
 
   ls = localStorage;
 
-  playerList : Array<string> = new Array<string>();
-  private previousPlayerList: string[] = [];
+  playerList : Array<Player> = new Array<Player>();
+  private previousPlayerList: Array<Player> = new Array<Player>();
   chatMessages: Array<string> = new Array<string>();
 
   message: string = "";
@@ -47,6 +49,21 @@ export class RoomComponent {
           if (error) console.error(error)
         })
       });
+
+      this.documentVisibilityService.getVisibilityChangeObservable()
+      .subscribe(isVisible => {
+        if (!isVisible) {
+          this.ws.emit('clientChangeStatus', {
+            name: localStorage.getItem('userName'),
+            status: "away"
+          });
+        } else {
+          this.ws.emit('clientChangeStatus', {
+            name: localStorage.getItem('userName'),
+            status: "active"
+          });
+        }
+      });
     }
 
 
@@ -55,23 +72,31 @@ export class RoomComponent {
       transports: ['websocket']
     });
 
-    this.ws.on('connect', () => {
-      console.log('Connected to WebSocket server');
+    this.ws.on("connect", () => {
+      this.ws.emit('clientChangeStatus', {
+        name: localStorage.getItem('userName'),
+        status: "active"
+      });
     });
 
+    this.ws.on("clientChangeStatus", (data: { [key: string]: any }) => {
+      this.playerList.forEach(player => {
+        if(player.name == data["name"]){
+          player.status = data["status"];
+        }
+      });
+    });
 
     this.ws.on("playerList", (data: { [key: string]: any }) => {
-      this.playerList = data['map']((element: any) => element['name']);
-
-      const addedPlayers = this.playerList.filter(player => !this.previousPlayerList.includes(player));
-      const removedPlayers = this.previousPlayerList.filter(player => !this.playerList.includes(player));
-
-      console.log(this.previousPlayerList);
-
-      if(this.previousPlayerList.length > 0){
+      this.playerList = data['map']((element: any) => ({ name: element.name, status: element.status}));
+    
+      const addedPlayers = this.playerList.filter(player => !this.previousPlayerList.some(prevPlayer => prevPlayer.name === player.name));
+      const removedPlayers = this.previousPlayerList.filter(prevPlayer => !this.playerList.some(player => player.name === prevPlayer.name));
+    
+      if (this.previousPlayerList.length > 0) {
         addedPlayers.forEach(player => {
           Toastify({
-            text: `¡${player} se ha unido!`,
+            text: `¡${player.name} se ha unido!`,
             duration: 3000,
             gravity: "top",
             position: "right",
@@ -80,10 +105,10 @@ export class RoomComponent {
             },
           }).showToast();
         });
-      
+    
         removedPlayers.forEach(player => {
           Toastify({
-            text: `¡${player} se ha desconectado!`,
+            text: `¡${player.name} se ha desconectado!`,
             duration: 3000,
             gravity: "top",
             position: "right",
@@ -95,8 +120,8 @@ export class RoomComponent {
       }
     
       this.previousPlayerList = this.playerList;
-
     });
+    
 
     this.ws.on("adminChange", (data: { [key: string]: any }) => {
       this.admin = data['name'];
