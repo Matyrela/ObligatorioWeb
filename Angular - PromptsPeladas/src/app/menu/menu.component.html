@@ -14,7 +14,7 @@
       <h2 class="text-center">Crear una sala</h2>
       <br>
       <div class="input-group mb-3">
-        <input type="text" [(ngModel)]="roomName" class="form-control" placeholder="Nombre de la sala" (keyup)="console.log(roomName)">
+        <input type="text" [(ngModel)]="roomName" class="form-control" placeholder="Nombre de la sala">
         <div class="input-group-append">
           &nbsp;<button class="btn btn-success" type="button" [disabled]='roomName === ""' (click)="createRoom(roomName)">Crear y unirse</button>
         </div>

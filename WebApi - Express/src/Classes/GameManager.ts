@@ -50,7 +50,15 @@ export class GameManager {
         let code : string = this.players.get(player) as string;
         return code;
     }
-    removePlayer(player: Player) {
-        this.players.delete(player);
+    
+    removePlayer(player: Player, code:string) {
+        let game = this.game.get(code);
+        if (game != undefined) {
+            game.removePlayer(player);
+            this.players.set(player, "INVALID")
+            if (game.players.length == 0) {
+                this.game.delete(game.id);
+            }
+        }    
     }
 }

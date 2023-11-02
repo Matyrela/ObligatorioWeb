@@ -3,7 +3,8 @@ import {Room} from "../clases/room";
 import {clientStatus} from "../clases/EclientStatus";
 import { env } from "../enviroment"
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import * as Toastify from 'toastify-js';
 
 @Component({
   selector: 'app-menu',
@@ -15,9 +16,19 @@ export class MenuComponent {
   roomId: string = "";
   isServerConnected: boolean = false;
   
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute) {}
   
   ngOnInit(): void {
+    this.route.paramMap.subscribe((params: ParamMap) => {
+      if(params.get('code') != null && params.get('code') != undefined){
+        this.connectRoom(params.get('code') as string);
+      }
+    });
+   if(localStorage.getItem('code') != undefined && localStorage.getItem('code') != null && localStorage.getItem('code') != 'null'){
+      this.connectRoom(localStorage.getItem('code') as string);
+      localStorage.removeItem('code');
+   }
+
     document.body.style.background = "rgb(134,203,255)";
     document.body.style.background = "linear-gradient(90deg, rgba(134,203,255,1) 0%, rgba(180,170,213,1) 50%, rgba(134,203,255,1) 100%)";
 
@@ -34,24 +45,62 @@ export class MenuComponent {
         this.connectRoom(data['code']);
       }
     });
-
-
   }
+
   createRoom(name: string) {
     this.roomName = name;
-    console.log('Creating room ' + name + '...');
-    
+    let token = localStorage.getItem('token');
+    if(token != null && token != undefined && token != 'null'){
     this.http.post(env.baseURL + '/game/create', {
-      token: localStorage.getItem('token'),
+      token: token,
       roomName: name
     }).subscribe((data: { [key: string]: any }) => {
       if(data['gameCreated']){
-        console.log('Sala creada con exito');
+        Toastify({
+          text: `¡Sala ${name} creada!`,
+          duration: 1000,
+          gravity: "bottom",
+          position: "right",
+          style: {
+            background: "#0d6efd",
+          },
+        }).showToast();
         this.connectRoom(data['code']);
       }else{
-        console.log('Error al crear la sala');
+        Toastify({
+          text: `¡No se pudo crear la sala ${name}!`,
+          duration: 3000,
+          gravity: "bottom",
+          position: "right",
+          style: {
+            background: "#ff0000",
+          },
+        }).showToast();
+
+        this.http.post(env.baseURL + '/user/validate', {
+          token: localStorage.getItem('token')
+        }).subscribe((data: { [key: string]: any }) => {
+          if(data['valid'] == false){
+            localStorage.removeItem('token');
+            localStorage.removeItem('userName');
+            Toastify({
+              text: `¡Login invalido!`,
+              duration: 3000,
+              gravity: "bottom",
+              position: "right",
+              style: {
+                background: "#ff0000",
+              },
+            }).showToast();
+            this.router.navigate(['login']);
+          }
+        });
+
       }
     }); 
+    }else{
+      this.router.navigate(['login']);
+    }
   }
   
   connectRoom(code: string) {
@@ -63,13 +112,31 @@ export class MenuComponent {
         token: token,
         code: code
       }).subscribe((data: { [key: string]: any }) => {
-        if(data['joined']){
-          console.log('Conectado a la sala');
+        if(data['joined'] == true){
+          Toastify({
+            text: `¡Uniendote a ${code}!`,
+            duration: 1000,
+            gravity: "bottom",
+            position: "right",
+            style: {
+              background: "#0d6efd",
+            },
+          }).showToast();
           this.router.navigate(['room']);
         }else{
-          console.log('Error al conectarse a la sala');
+          Toastify({
+            text: `¡No se pudo conectar a la sala ${code}!`,
+            duration: 3000,
+            gravity: "bottom",
+            position: "right",
+            style: {
+              background: "#ff0000",
+            },
+          }).showToast();
         }
       });
+    }else{
+      this.router.navigate(['login']);
     }
   }
 

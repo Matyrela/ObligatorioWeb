@@ -16,6 +16,7 @@ export class UserHandler{
     getPlayer(token: string): Player | null {
         let player: Player | null = null;
         let name : string = '';
+        
         Array.from(this.userToken.keys()).forEach(element => {
             if (this.userToken.get(element) == token)
                 name = element;

@@ -10,22 +10,14 @@ export class GameHandler {
             let roomGame = req.body.roomName as string;
             let token: string = req.body.token as string;
             let player: null | Player = UserHandler.getInstance().getPlayer(token);
-
             let gameCreated;
                 if(roomGame != null && roomGame != "" && roomGame != undefined && roomGame.length > 0 && player != null) {
                     gameCreated = GameManager.getInstance().createGame(roomGame, player, ws);
-                }else{
-                    console.log('Error al crear la sala el if grande porque: ');
-                    console.log('roomGame: ' + roomGame);
-                    console.log('player: ' + player);
                 }
             
                 if(gameCreated?.id != null) {
                     res.send({'gameCreated' : true , 'code' : gameCreated.id});
                     return;
-                }else{
-                    console.log('Error al crear la sala en gameCreated?.id != null: ');
-                    console.log('gameCreated?.id: ' + gameCreated?.id);
                 }
 
         
@@ -43,10 +35,13 @@ export class GameHandler {
                     if (player != null) {
                         gameManager.joinGame(player, game);
                         res.send({'joined' : true});
+                        return;
                     }
                 }
             }
+            res.send({'joined' : false});
         });
+
         app.post('/api/game/get', (req, res) => {
             let token = req.body.token as string;
             let player = UserHandler.getInstance().getPlayer(token);
@@ -66,6 +61,7 @@ export class GameHandler {
                 }
             }
         });
+
         app.post('/api/game/reconnect', (req, res) => {
             let token = req.body.token as string;
             let player = UserHandler.getInstance().getPlayer(token);
@@ -88,7 +84,7 @@ export class GameHandler {
             if (player != null && player != undefined){
                 let code = gm.checkPlayerInGame(player);
                 if (code != 'INVALID') {
-                    gm.removePlayer(player);
+                    gm.removePlayer(player, code);
                     res.send({"removed" : true})
                     return;
                 }

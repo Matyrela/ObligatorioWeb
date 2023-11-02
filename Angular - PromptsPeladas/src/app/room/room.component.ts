@@ -4,6 +4,7 @@ import { env } from '../enviroment';
 import { io, Socket } from "socket.io-client";
 import { Router } from '@angular/router';
 import * as QRCode from 'qrcode';
+import * as Toastify from 'toastify-js'
 
 @Component({
   selector: 'app-room',
@@ -20,6 +21,7 @@ export class RoomComponent {
   ls = localStorage;
 
   playerList : Array<string> = new Array<string>();
+  private previousPlayerList: string[] = [];
   chatMessages: Array<string> = new Array<string>();
 
   message: string = "";
@@ -41,11 +43,12 @@ export class RoomComponent {
         this.connWebSocket();
 
         let qrCanvas = document.getElementById('qrCode')
-        QRCode.toCanvas(qrCanvas,  this.code, function (error: any) {
+        QRCode.toCanvas(qrCanvas,  env.angularURL + "menu/" + this.code, function (error: any) {
           if (error) console.error(error)
         })
       });
     }
+
 
   connWebSocket() {
     this.ws = io(env.WebSocket + this.code , {
@@ -56,18 +59,80 @@ export class RoomComponent {
       console.log('Connected to WebSocket server');
     });
 
+
     this.ws.on("playerList", (data: { [key: string]: any }) => {
-      this.playerList = new Array<string>();
-      data['forEach']((element: any) => {
-        this.playerList.push(element['name']);
-      });
+      this.playerList = data['map']((element: any) => element['name']);
+
+      const addedPlayers = this.playerList.filter(player => !this.previousPlayerList.includes(player));
+      const removedPlayers = this.previousPlayerList.filter(player => !this.playerList.includes(player));
+
+      console.log(this.previousPlayerList);
+
+      if(this.previousPlayerList.length > 0){
+        addedPlayers.forEach(player => {
+          Toastify({
+            text: `¡${player} se ha unido!`,
+            duration: 3000,
+            gravity: "top",
+            position: "right",
+            style: {
+              background: "#0d6efd",
+            },
+          }).showToast();
+        });
+      
+        removedPlayers.forEach(player => {
+          Toastify({
+            text: `¡${player} se ha desconectado!`,
+            duration: 3000,
+            gravity: "top",
+            position: "right",
+            style: {
+              background: "#ff0000",
+            },
+          }).showToast();
+        });
+      }
+    
+      this.previousPlayerList = this.playerList;
+
+    });
+
+    this.ws.on("adminChange", (data: { [key: string]: any }) => {
+      this.admin = data['name'];
+      if(this.admin === localStorage.getItem("userName")){
+        Toastify({
+          text: data['name'] + " (Tú) es el nuevo administrador",
+          duration: 3000,
+          gravity: "top",
+          position: "right",
+          style: {
+            background: "#0d6efd",
+          },
+        }).showToast();
+      }else{
+        Toastify({
+          text: data['name'] + " es el nuevo administrador",
+          duration: 3000,
+          gravity: "top",
+          position: "right",
+          style: {
+            background: "#0d6efd",
+          },
+        }).showToast();
+      }
+      
     });
 
     this.ws.on("chatMessage", (data: { [key: string]: any }) => {
-      if(data['name'] == localStorage.getItem('userName'))
-        this.chatMessages.push(data['name'] + " (Tú): " + data['message']);
-      else {
-        this.chatMessages.push(data['name'] + ": " + data['message']);
+      if(data['server'] == true){
+        this.chatMessages.push(data['message']);
+      }else{
+        if(data['name'] == localStorage.getItem('userName'))
+          this.chatMessages.push(data['name'] + " (Tú): " + data['message']);
+        else {
+          this.chatMessages.push(data['name'] + ": " + data['message']);
+        }
       }
 
       //CHAT COMMANDS

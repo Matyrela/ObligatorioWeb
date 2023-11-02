@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { env } from '../enviroment';
-import { Router } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 })
 export class LoginComponent {
 
-  constructor(private http: HttpClient, private router: Router ){}
+  constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute){}
 
   reg:boolean = false;
 
@@ -64,8 +64,19 @@ export class LoginComponent {
     }
   }
 
-  //Chanchada abajo no mirar mucho
   ngOnInit() {
+    let token = localStorage.getItem('token');
+    if(token != null && token != undefined && token != 'null'){
+      this.http.post(env.baseURL + '/user/validate', {
+        token: token
+      }).subscribe((data: { [key: string]: any }) => {
+        if(data['valid'] == true){
+            this.router.navigate(['']);
+        }
+      });
+    }
+
+  //Chanchada abajo no mirar mucho
     document.body.style.backgroundColor = '#3f3f3f';
   }
 

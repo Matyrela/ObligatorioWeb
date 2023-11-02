@@ -9,34 +9,61 @@ export class Game {
     status : Status;
     adminPlayer!: Player;
 
+    ws: any;
+    url: string = "";
+
     constructor(name : string, id : string, ws: any) {
         this.id = id;
         this.name = name;
         this.players = new Array<Player>();
         this.status = Status.WAITING;
+        this.ws = ws;
 
-        let url = "/games/ws/"+this.id;
+        this.url = "/games/ws/"+this.id;
 
-        ws.of(url).on('connection', (socket: any) => {
-            socket.emit('playerList', this.players);
-            ws.of(url).emit('playerList', this.players);
+        ws.of(this.url).on('connection', (socket: any) => {
+            //socket.emit('playerList', this.players);
+            ws.of(this.url).emit('playerList', this.players);
           
             socket.on('chatMessage', (data: { [key: string]: any }) => {              
-                ws.of(url).emit('chatMessage', data);
+                ws.of(this.url).emit('chatMessage', data);
             });
           });
 
     }
-    public addPlayer(user: Player) {
+
+    public addPlayer(player: Player) {
         if(this.players.length == 0)
-            this.adminPlayer = user;
-        this.players.push(user);
+            this.adminPlayer = player;
+        this.players.push(player);
     }
+
     public removePlayer(player: Player) {
-        //CAMBIAR ADMIN SI EL ADMIN SE SALE Y NOTIFICARLO POR WS (WebSocket)
+        let adminWasChanged = false;
+    
         this.players = this.players.filter((value) => {
-            return value != player;
+            return value !== player;
         });
+    
+        if (player === this.adminPlayer) {
+            if (this.players.length > 0) {
+                adminWasChanged = true;
+                this.adminPlayer = this.players[Math.floor(Math.random() * this.players.length)];
+            }
+        }
+
+        setTimeout(() => {
+            this.ws.of(this.url).emit('playerList', this.players);
+            if(adminWasChanged)
+                this.ws.of(this.url).emit('adminChange', this.adminPlayer)
+        }, 1000);
+    }
+    
+
+    public sendChatMessage(message: string){
+        setTimeout(() => {
+            this.ws.of(this.url).emit('chatMessage', {'server' : true, 'message' : message});
+        }, 1000);
     }
 }
 
