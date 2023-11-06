@@ -54,7 +54,6 @@ export class MenuComponent {
   scanQR() {
     navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
       .then(stream => {
-        // Acceso a la cámara exitoso
         import('qr-scanner').then(QrScanner => {
           if (this.videoElement) {
             this.videoElement.classList.remove("hidden");
@@ -101,7 +100,7 @@ export class MenuComponent {
       if(data['gameCreated']){
         Toastify({
           text: `¡Sala ${name} creada!`,
-          duration: 1000,
+          duration: 3000,
           gravity: "bottom",
           position: "right",
           style: {
@@ -158,7 +157,7 @@ export class MenuComponent {
         if(data['joined'] == true){
           Toastify({
             text: `¡Uniendote a ${code}!`,
-            duration: 1000,
+            duration: 3000,
             gravity: "bottom",
             position: "right",
             style: {
