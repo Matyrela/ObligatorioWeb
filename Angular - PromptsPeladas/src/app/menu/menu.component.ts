@@ -16,7 +16,7 @@ export class MenuComponent {
   roomId: string = "";
   isServerConnected: boolean = false;
   
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, public router: Router) {}
   
   ngOnInit(): void {
     this.http.get(env.baseURL + '/ping').subscribe((data: { [key: string]: any }) => {
