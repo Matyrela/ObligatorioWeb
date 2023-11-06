@@ -5,14 +5,14 @@ import { LoginComponent } from './login/login.component';
 import { RoomComponent } from './room/room.component';
 import { HttpClient } from '@angular/common/http';
 import { AuthGuard } from './clases/auth-guard.service';
+import { GameComponent } from './game/game.component';
 
 const routes: Routes = [
   { path: '', component: MenuComponent, canActivate: [AuthGuard]},
-  
   { path: 'menu', component: MenuComponent, canActivate: [AuthGuard]},
   { path: 'menu/:code', component: MenuComponent, canActivate: [AuthGuard]},
-
   { path: 'room', component: RoomComponent, canActivate: [AuthGuard]},
+  { path: 'game', component: GameComponent, canActivate: [AuthGuard]},
 
   { path: 'login', component: LoginComponent},
 ];

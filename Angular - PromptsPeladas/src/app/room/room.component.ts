@@ -32,45 +32,81 @@ export class RoomComponent {
 
   chatPop: HTMLAudioElement = new Audio('assets/sound/chatpop.mp3');
 
+  start:boolean = false;
+
   ngOnInit() {
-      this.http.post(
-      env.baseURL + '/game/get', {
-        token : localStorage.getItem('token')
-      }).subscribe((data: { [key: string]: any }) => {
-        this.code = data['code'];
-        this.roomName = data['roomName'];
-        this.conStatus = data['status'];
-        this.admin = data['admin'].name;
+    this.http.post(
+    env.baseURL + '/game/get', {
+      token : localStorage.getItem('token')
+    }).subscribe((data: { [key: string]: any }) => {
+      this.code = data['code'];
+      this.roomName = data['roomName'];
+      this.conStatus = data['status'];
+      this.admin = data['admin'].name;
 
-        this.connWebSocket();
+      this.connWebSocket();
 
-        let qrCanvas = document.getElementById('qrCode')
-        QRCode.toCanvas(qrCanvas,  env.angularURL + "menu/" + this.code, function (error: any) {
-          if (error) console.error(error)
-        })
-      });
+      let qrCanvas = document.getElementById('qrCode')
+      QRCode.toCanvas(qrCanvas,  env.angularURL + "menu/" + this.code, function (error: any) {
+        if (error) console.error(error)
+      })
+    });
 
-      this.documentVisibilityService.getVisibilityChangeObservable()
-      .subscribe(isVisible => {
-        if (!isVisible) {
-          this.ws.emit('clientChangeStatus', {
-            name: localStorage.getItem('userName'),
-            status: "away"
-          });
-        } else {
-          this.ws.emit('clientChangeStatus', {
-            name: localStorage.getItem('userName'),
-            status: "active"
-          });
-        }
-      });
+    this.documentVisibilityService.getVisibilityChangeObservable()
+    .subscribe(isVisible => {
+      if (!isVisible) {
+        this.ws.emit('clientChangeStatus', {
+          name: localStorage.getItem('userName'),
+          status: "away"
+        });
+      } else {
+        this.ws.emit('clientChangeStatus', {
+          name: localStorage.getItem('userName'),
+          status: "active"
+        });
+      }
+    });
+  }
+
+  countdown: string = "";
+
+  startCountdown(countDown: number): void {
+    if(this.start)
+      return;
+
+      this.start = true;
+
+    if(this.ws != null){
+      this.ws.emit('startGame', {
+        name: localStorage.getItem('userName'),
+      });  
     }
+    
+  
+    const intervalId = setInterval(() => {
+      if (countDown >= 1) {
+  
+        this.countdown = countDown.toString();
+  
+        countDown--;
+      } else {
+        clearInterval(intervalId);
+        this.countdown = "";
+        localStorage.setItem("gameCode", this.code);
+        this.router.navigate(['game']);
+      }
+    }, 1000);
+  }
 
 
   connWebSocket() {
     this.ws = io(env.WebSocket + this.code , {
       transports: ['websocket']
     });
+
+    this.ws.on("startGame", () => {
+      this.startCountdown(3);
+    })
 
     this.ws.on("connect", () => {
       this.ws.emit('clientChangeStatus', {

@@ -14,7 +14,6 @@ app.use(express.json())
 
 const httpServer = createServer(app);
 
-
 app.use(cors(corsOptions));
 const PORT = 7777;
 

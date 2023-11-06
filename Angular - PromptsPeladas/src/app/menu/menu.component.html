@@ -5,9 +5,9 @@
       <hr>
       <h2 class="text-center">Unirse a una sala</h2>
       <div class="input-group mb-3">
-        <input type="text" class="form-control" placeholder="Código de la sala" aria-describedby="basic-addon2" #input>
+        <input type="text" class="form-control" maxlength="4" placeholder="Código de la sala" aria-describedby="basic-addon2" #input>
         <div class="input-group-append">
-          &nbsp;<button class="btn btn-info" type="button" (click)="connectRoom(input.value)">Unirse</button>
+          &nbsp;<button class="btn btn-info" type="button" (click)="input.value = input.value.toLocaleUpperCase();connectRoom(input.value)">Unirse</button>
         </div>
       </div>
       <video class="embed-responsive embed-responsive-1by1 video hidden" id="videoqr"></video>

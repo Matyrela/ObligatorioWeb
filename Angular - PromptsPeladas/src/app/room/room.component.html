@@ -1,6 +1,9 @@
+<div  class="cortina" [style.display]="this.start ? 'block' : 'none'" id="cortina">
+  <p class="cortinaNumber text-center" *ngIf="countdown != ''"> {{countdown}} </p>
+</div>
+
 <div class="container mt-4">
   <h1 class="text-center">{{roomName}}</h1>
-
   <div class="row mt-4">
     <div class="col-md-4">
       <div class="card">
@@ -34,7 +37,7 @@
           </div>
           <hr>
           <div class="title">
-            <button class="btn btn-success" [ngClass]="{'disabled': this.admin != (ls.getItem('userName'))}">Iniciar juego</button>
+            <button class="btn btn-success" [ngClass]="{'disabled': this.admin != (ls.getItem('userName'))}" (click)=" this.startCountdown(3);">Iniciar juego</button>
           </div>
         </div>
       </div>

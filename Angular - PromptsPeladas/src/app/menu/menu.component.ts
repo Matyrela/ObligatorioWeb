@@ -43,7 +43,11 @@ export class MenuComponent {
       token: localStorage.getItem('token')
     }).subscribe((data: { [key: string]: any }) => {
       if(data['code'] != undefined && data['code'] != null && data['code'] != 'INVALID'){
-        this.connectRoom(data['code']);
+        if(data['started'] == true){
+          this.router.navigate(['game']);
+        }else{
+          this.connectRoom(data['code']);
+        }
       }
     });
     this.videoElement = document.getElementById("videoqr") as HTMLVideoElement;
@@ -145,9 +149,7 @@ export class MenuComponent {
     }
   }
   
-  connectRoom(code: string) {
-    code = code.toUpperCase();
-    
+  connectRoom(code: string) {    
     let token = localStorage.getItem('token');
     if(token != null && token != undefined && token != 'null'){
       this.http.post(env.baseURL + '/game/join', {  

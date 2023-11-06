@@ -6,6 +6,7 @@ import { UserHandler } from './UserHandler';
 
 export class GameHandler {
     constructor(app: Express, ws: any) {    
+        
         app.post('/api/game/create', (req, res) => { 
             let roomGame = req.body.roomName as string;
             let token: string = req.body.token as string;
@@ -33,9 +34,11 @@ export class GameHandler {
                 if(game != undefined && game != null) {
                     let player = UserHandler.getInstance().getPlayer(token);
                     if (player != null) {
-                        gameManager.joinGame(player, game);
-                        res.send({'joined' : true});
-                        return;
+                        if(!game.started || game.players.includes(player)){
+                            gameManager.joinGame(player, game);
+                            res.send({'joined' : true});
+                            return;
+                        }
                     }
                 }
             }
@@ -71,12 +74,13 @@ export class GameHandler {
                 if (code != 'INVALID') {
                     let game = gm.getGame(code);
                     if (game != undefined && game != null) {
-                        res.send({'code' : code});
+                        res.send({'code' : code, 'started' : game.started});
                         return;
                     }
                 }
             }   
         });
+
         app.post('/api/game/quit', (req, res) => {
             let token = req.body.token as string;
             let player = UserHandler.getInstance().getPlayer(token);

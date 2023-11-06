@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Playpen+Sans:wght@500&display=swap');
+
 .colContent{
     max-height: 64vh;
     height: 64vh;
@@ -19,3 +21,40 @@
     text-align: center;
     margin-top: 50%;
 }
+
+.cortina{
+    display: none;
+    top: 0;
+    position:fixed;
+    z-index: 100;
+    background-color: #070707cc;
+    height: 100vh;
+    width: 100vw;
+}
+
+.cortinaNumber{
+    --textSize: 25vh;
+
+    margin-top: calc(50vh - var(--textSize));
+    font-size: var(--textSize);
+    animation: cortinaNumberAnim 1s infinite;
+    font-family: 'Playpen Sans', cursive;
+}
+
+
+@keyframes cortinaNumberAnim {
+    0% {
+        color: #00000000;
+        margin-top: calc(50vh - var(--textSize) + 30vh);
+    }
+
+    40%, 60%{
+        color: white;
+        margin-top: calc(50vh - var(--textSize));
+    }
+  
+    100% {
+        color: #00000000;
+        margin-top: calc(50vh - var(--textSize) - 30vh);
+    }
+  }
