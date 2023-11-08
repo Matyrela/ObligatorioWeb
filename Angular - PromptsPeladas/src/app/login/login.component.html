@@ -18,5 +18,14 @@
               <button class="btn btn-dark btn-block" (click)="login()" *ngIf="reg == false">Login</button>
             </div>
           </div>
+          <div class="px-4" *ngIf='status != "" && statusTitle != ""'>
+            <div class="statusBox">
+              <div class="px-4">
+                <h4>{{statusTitle}}</h4>
+                <hr style="margin-top: -7px;margin-bottom: 5px;">
+                <p>{{status}}</p>
+              </div>
+            </div>
+          </div>
       </div>
 </div>
