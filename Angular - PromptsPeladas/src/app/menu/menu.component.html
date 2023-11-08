@@ -34,3 +34,7 @@
   <div class="connection-text">Estado del servidor: &nbsp;</div>
   <div class="connection-dot" [ngClass]="{'green-dot': isServerConnected, 'red-dot': !isServerConnected}"></div>
 </div>
+
+<div>
+  <button class="btn btn-danger" (click)="this.router.navigate(['activity']);">Actividades</button>
+</div>
