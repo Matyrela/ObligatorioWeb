@@ -3,6 +3,7 @@ const cors = require('cors');
 import { GameHandler } from './GameHandler';
 import { UserHandler } from './UserHandler';
 import { createServer } from "http";
+import { ActivityHandler } from './ActivityHandler';
 
 const app = express()
 var corsOptions = {
@@ -20,6 +21,7 @@ const PORT = 7777;
 
 new GameHandler(app, httpServer);
 new UserHandler(app);
+new ActivityHandler(app);
 
 app.get('/api/ping', (req, res) => {
     res.send({'ping' : 'pong'});
