@@ -29,22 +29,36 @@ export class GameManager {
         return Array.from(this.players.keys());
     }
 
-    createGame(roomName: string, player: Player): Game {
+    createGame(roomName: string, player: Player, ws: any): Game {
         let id = Math.random().toString(32).substring(4, 8).toUpperCase();
 
-        let newGame: Game = new Game(roomName, id);
+        let newGame: Game = new Game(roomName, id, ws);
 
         this.game.set(id, newGame);
         this.joinGame(player, newGame);
         return newGame;
     }
+
     joinGame(player : Player, game : Game){
-        game.addPlayer(player);
+        if(!game.players.includes(player)){
+            game.addPlayer(player);
+        }
         this.players.set(player, game.id);
     }
 
     checkPlayerInGame(player: Player) : string {
         let code : string = this.players.get(player) as string;
         return code;
+    }
+    
+    removePlayer(player: Player, code:string) {
+        let game = this.game.get(code);
+        if (game != undefined) {
+            game.removePlayer(player);
+            this.players.set(player, "INVALID")
+            if (game.players.length == 0) {
+                this.game.delete(game.id);
+            }
+        }    
     }
 }

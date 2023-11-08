@@ -1,7 +1,3 @@
-.bgbody{
-    background: #333333 !important;
-}
-
 .card{
     width: 400px;
     border:none;  
@@ -9,11 +5,20 @@
 
 .btr{  
     border-top-right-radius: 5px !important;
+    cursor: pointer;
 }
-  
-  
+
+.statusBox{
+  background-color: #0d6efd;
+  color: white;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+}
+
 .btl{
     border-top-left-radius: 5px !important;
+    cursor: pointer;
 }
   
 .btn-dark {
@@ -21,49 +26,45 @@
     background-color: #0d6efd;
     border-color: #0d6efd;
 }
-  
-  
-  .btn-dark:hover {
-      color: #fff;
-      background-color: #0d6efd;
-      border-color: #0d6efd;
-  }
-  
-  .nav-pills{
-    display:table !important;
-    width:100%;
-  }
-  
-  .nav-pills .nav-link {
-    border-radius: 0px;
-    border-bottom: 1px solid #0d6efd40;
-  
-  }
-  
-  .nav-item{
-    display: table-cell;
-    background: #0d6efd2e;
-  }
-  
-  
-  .form{
-    padding: 10px;
-    height: 300px;
-  }
-  
-  .form input{
-    margin-bottom: 12px;
-    border-radius: 3px;
-  }
-  
-  
-  .form input:focus{
-  
-    box-shadow: none;
-  }
-  
-  
-  .form button{
-  
-    margin-top: 20px;
-  }
+
+.btn-dark:hover {
+    color: #fff;
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.nav-pills{
+  display:table !important;
+  width:100%;
+}
+
+.nav-pills .nav-link {
+  border-radius: 0px;
+  border-bottom: 1px solid #0d6efd40;
+
+}
+
+.nav-item{
+  display: table-cell;
+  background: #0d6efd2e;
+}
+
+.form{
+  padding: 10px;
+  height: 300px;
+}
+
+.form input{
+  margin-bottom: 12px;
+  border-radius: 3px;
+}
+
+.form input:focus{
+
+  box-shadow: none;
+}
+
+.form button{
+
+  margin-top: 20px;
+}

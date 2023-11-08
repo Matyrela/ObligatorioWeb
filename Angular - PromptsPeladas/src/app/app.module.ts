@@ -11,6 +11,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { LoginComponent } from './login/login.component';
 import { CreateActivityComponent } from './create-activity/create-activity.component';
 import { RoomComponent } from './room/room.component';
+import { GameComponent } from './game/game.component';
 
 @NgModule({
   declarations: [
@@ -19,6 +20,7 @@ import { RoomComponent } from './room/room.component';
     LoginComponent,
     CreateActivityComponent,
     RoomComponent,
+    GameComponent,
   ],
   imports: [
       BrowserModule,

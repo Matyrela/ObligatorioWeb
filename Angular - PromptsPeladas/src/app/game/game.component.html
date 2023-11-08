@@ -1,0 +1,37 @@
+<div  class="cortina" [style.display]="this.show ? 'block' : 'none'" id="cortina">
+    <div class="cortinaNumber">
+        <div class="card text-center prompt">
+            <div class="card-header">
+              <h1 class="promptText">❝ {{ prompt }} ❞</h1>
+              <hr class="promtsHr">
+              <p class="promptAuthor">- {{ author }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container promptHolder">
+    <div class="row">
+      <div class="col-lg-8 mx-auto">
+        <h1 class="text-center promptTitle">¡Responde con algo chistoso!</h1>
+        <div class="timerDiv">
+            <h1 class="timer" id='timer' >{{ timer }}</h1>
+        </div>
+        <div class="card text-center prompt">
+          <div class="card-header">
+            <h1 class="promptText">❝ {{ prompt }} ❞</h1>
+            <hr class="promtsHr">
+            <p class="promptAuthor">- {{ author }}</p>
+          </div>
+        </div>
+        <br>
+        <hr>
+        <br>
+        <textarea class="form-control" rows="2" [(ngModel)]="answer" placeholder="¡Responde aqui!"></textarea>
+        <div class="text-center">
+            <br>
+            <button type="button" class="btn btn-primary btn-lg btn-block btn-prompt" (click)="submitAnswer()">Submit</button>
+        </div>
+      </div>
+    </div>
+  </div>

@@ -2,26 +2,25 @@
   <div class="row">
     <div class="col-sm-6 mx-auto">
       <h1 class="text-center">Prompts - Peladas</h1>
-      <div class="bg-success text-center" *ngIf="conStatus == clientStatus.waiting">
-        <h2>Conectándote a: {{roomName}}</h2>
-      </div>
       <hr>
       <h2 class="text-center">Unirse a una sala</h2>
       <div class="input-group mb-3">
-        <input type="text" class="form-control" placeholder="Código de la sala" aria-describedby="basic-addon2" #input>
+        <input type="text" class="form-control" maxlength="4" placeholder="Código de la sala" aria-describedby="basic-addon2" #input>
         <div class="input-group-append">
-          &nbsp;<button class="btn btn-info" type="button" [disabled]="conStatus != clientStatus.disconnected" (click)="connectRoom(input.value)">Unirse</button>
+          &nbsp;<button class="btn btn-info" type="button" (click)="input.value = input.value.toLocaleUpperCase();connectRoom(input.value)">Unirse</button>
         </div>
       </div>
-
+      <video class="embed-responsive embed-responsive-1by1 video hidden" id="videoqr"></video>
+      <div class="text-center">
+        <button class="btn btn-success " (click)="scanQR()">Escanear QR</button>
+      </div>
       <hr>
       <h2 class="text-center">Crear una sala</h2>
       <br>
-
       <div class="input-group mb-3">
-        <input type="text" [(ngModel)]="roomName" class="form-control" placeholder="Nombre de la sala" (keyup)="console.log(roomName)">
+        <input type="text" [(ngModel)]="roomName" class="form-control" placeholder="Nombre de la sala">
         <div class="input-group-append">
-          &nbsp;<button class="btn btn-success" type="button" [disabled]='conStatus != clientStatus.disconnected || roomName === ""' (click)="createRoom(roomName)">Crear y unirse</button>
+          &nbsp;<button class="btn btn-success" type="button" [disabled]='roomName === ""' (click)="createRoom(roomName)">Crear y unirse</button>
         </div>
       </div>
 

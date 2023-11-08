@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { env } from '../enviroment';
-import { Router } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 })
 export class LoginComponent {
 
-  constructor(private http: HttpClient, private router: Router ){}
+  constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute){}
 
   reg:boolean = false;
 
@@ -18,7 +18,13 @@ export class LoginComponent {
   userPassword: string = "";
   userPassword2: string = "";
 
+  statusTitle: string = "";
+  status: string = "";
+
   login(){
+    this.statusTitle = "";
+    this.status = "";
+
     this.http.post(
     env.baseURL + '/user/login', {userName: this.userName, userPassword: this.userPassword}
     ).subscribe((data: { [key: string]: any }) => {
@@ -29,30 +35,48 @@ export class LoginComponent {
       }else{
         localStorage.setItem('token', 'null');
         localStorage.setItem('userName', 'null');
-        alert('Login inválido');
+        this.statusTitle = "Error";
+        this.status = "Usuario o contraseña incorrectos";
       }
     });
   }
 
   register(){
+    this.statusTitle = "";
+    this.status = "";
+    
     if(this.userPassword == this.userPassword2){
       this.http.post(
         env.baseURL + '/user/register', {userName: this.userName, userPassword: this.userPassword}
       ).subscribe((data: { [key: string]: any }) => {
         if(data['userCreated'] === true){
-          alert('Usuario creado');
+          this.statusTitle = "Success";
+          this.status = "Usuario creado con éxito";
           this.reg = false;
         }else{
-          alert('Usuario ya existe');
+          this.statusTitle = "Error";
+          this.status = "El usuario ya existe";
         }
       });
     }else{
-      alert('Contraseñas no coinciden');
+      this.statusTitle = "Error";
+      this.status = "Las contraseñas no coinciden";
     }
   }
 
-  //Chanchada abajo no mirar mucho
   ngOnInit() {
+    let token = localStorage.getItem('token');
+    if(token != null && token != undefined && token != 'null'){
+      this.http.post(env.baseURL + '/user/validate', {
+        token: token
+      }).subscribe((data: { [key: string]: any }) => {
+        if(data['valid'] == true){
+            this.router.navigate(['']);
+        }
+      });
+    }
+
+  //Chanchada abajo no mirar mucho
     document.body.style.backgroundColor = '#3f3f3f';
   }
 
