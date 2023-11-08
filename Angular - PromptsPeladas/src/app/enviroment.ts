@@ -1,7 +1,7 @@
 export const env = {
     production: false,
-    angularURL: 'http://192.168.103.220:4200/',
-    baseURL: 'http://192.168.103.220:7777/api',
-    WebSocket: "ws://192.168.103.220:7777/games/ws/"
+    angularURL: 'http://10.13.230.21:4200/',
+    baseURL: 'http://10.13.230.21:7777/api',
+    WebSocket: "ws://10.13.230.21:7777/games/ws/"
 
 }

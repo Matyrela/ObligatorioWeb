@@ -1,7 +1,7 @@
 import { Express } from 'express';
 import { Activity } from "./Classes/Activity";
 import { UserHandler } from './UserHandler';
-import { Player } from './Classes/Player';  
+import { Player } from './Classes/Player';
 
 export class ActivityHandler {
 
@@ -24,12 +24,12 @@ export class ActivityHandler {
 
                 let newActivity = new Activity(this.activityList.length, playerName, description);
                 this.activityList.push(newActivity);
-                res.send({ 'activityCreated': true});
+                res.send({ 'activityCreated': true });
                 return;
-            }else{
+            } else {
                 console.log("player null");
             }
-            
+
             return;
         });
 
@@ -50,6 +50,6 @@ export class ActivityHandler {
             res.send({ 'activities': activities });
             return;
         });
-    
+
     }
 }

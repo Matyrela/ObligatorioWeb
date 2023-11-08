@@ -7,6 +7,7 @@ import { HttpClient } from '@angular/common/http';
 import { AuthGuard } from './clases/auth-guard.service';
 import { CreateActivityComponent } from './create-activity/create-activity.component';
 import { GameComponent } from './game/game.component';
+import { CreateProposalComponent } from './create-proposal/create-proposal.component';
 
 const routes: Routes = [
   { path: '', component: MenuComponent, canActivate: [AuthGuard]},
@@ -16,7 +17,8 @@ const routes: Routes = [
   { path: 'game', component: GameComponent, canActivate: [AuthGuard]},
 
   { path: 'login', component: LoginComponent},
-  { path: 'activity', component: CreateActivityComponent, canActivate: [AuthGuard]}
+  { path: 'activity', component: CreateActivityComponent, canActivate: [AuthGuard]},
+  { path: 'proposal', component: CreateProposalComponent, canActivate: [AuthGuard]}
 ];
 
 @NgModule({
