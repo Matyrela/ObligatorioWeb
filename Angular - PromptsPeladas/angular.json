@@ -17,6 +17,10 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "allowedCommonJsDependencies": [
+              "qrCode",
+              "Toastyfy-js"
+            ],
             "outputPath": "dist/pp",
             "index": "src/index.html",
             "main": "src/main.ts",

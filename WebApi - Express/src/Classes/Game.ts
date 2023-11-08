@@ -1,5 +1,6 @@
 import { Activity } from "./Activity";
 import { Player } from "./Player";
+import { Utils } from "./Utils";
 
 export class Game {
   id: string;
@@ -7,16 +8,18 @@ export class Game {
   players: Player[];
   status: Status;
   adminPlayer!: Player;
+  reversed : boolean;
 
   ws: any;
   url: string = "";
 
   activities: Activity[] = [];
-  currentActivity: Activity | undefined;
+  activityPlayer = new Map<Activity, Player[]>();
 
   public started: boolean = false;
 
   constructor(name: string, id: string, ws: any) {
+    this.reversed = false;
     this.activities = [
         new Activity(1, "Nestor", "Marcas de autos"),
         new Activity(2, "Martin", "Nombres de bizcochos"),
@@ -55,6 +58,11 @@ export class Game {
 
     ws.of(this.url).on("connection", (socket: any) => {
       ws.of(this.url).emit("playerList", this.players);
+      if(this.started){
+        socket.emit("activityPlayer", {'activityPlayer' : this.activityPlayer});
+        socket.emit("stage", {"stage" : this.stage});
+        socket.emit("timer", {'timer' : this.timer});
+      }
 
       //--------------------------------------------------------------------------------
 
@@ -71,56 +79,45 @@ export class Game {
           this.started = true;
           ws.of(this.url).emit("startGame");
 
+          this.getActivities();
+          console.log(this.activityPlayer);
+          console.log(JSON.stringify(this.activityPlayer));
+
           setTimeout(() => {
-            this.currentActivity =
-              this.activities[
-                Math.floor(Math.random() * this.activities.length)
-              ];
-            this.activities = this.activities.filter((value) => {
-              return value !== this.currentActivity;
-            });
+            this.ws.of(this.url).emit("activityPlayer", JSON.stringify(this.activityPlayer));
             this.startAnswerTimer();
             return;
           }, 5000);
         }
       });
-
-      socket.on("currentActivity", (data: { [key: string]: any }) => {
-        if (this.currentActivity != undefined)
-          ws.of(this.url).emit("currentActivity", this.currentActivity);
-      });
     });
   }
 
-  public startAnswerTimer() {
-    console.log(this.activities.length);
-    console.log(this.currentActivity);
+  stage: number = 0;
+  timer: number = 30;
 
-    if (this.activities.length == 0) {
-      console.log("SE ACABO");
-    } else {
-      let timer = 30;
-      this.ws.of(this.url).emit("currentActivity", this.currentActivity);
-      setTimeout(() => {
-        //ESTE PRIMER TIMEOUT ES PARA LA ANIMACION EN EL HTML
-        let x = setInterval(() => {
-            if (timer == 0) {
-              this.currentActivity = this.activities[Math.floor(Math.random() * this.activities.length)];
-              this.activities = this.activities.filter((value) => {
-                return value !== this.currentActivity;
-              });
-              this.ws.of(this.url).emit("timer",{'timer' : "¡SE ACABO!"});
-              setTimeout(() => {
-                this.startAnswerTimer();
-              }, 2000);
-              clearInterval(x);
-              return;
-            }else{
-                this.ws.of(this.url).emit("timer",{'timer' : timer});
-                timer--;
-            }
-          }, 1000);
-      }, 3000);
+  public startAnswerTimer() {
+    if(this.stage == 2){
+      console.log("TERMINO");
+      return;
+    }else{
+      this.ws.of(this.url).emit("newStage");
+      this.ws.of(this.url).emit("stage", {"stage" : this.stage});
+      let x = setInterval(() => {
+        if(this.timer > 0){
+          this.timer--;
+          this.ws.of(this.url).emit("timer", {'timer' : this.timer});
+        }else{
+          this.ws.of(this.url).emit("timer",  {'timer' : "¡Se acabó el tiempo!"});
+          clearInterval(x);
+          setTimeout(() => {
+            this.stage++;
+            this.timer = 30;
+            this.startAnswerTimer();
+          }, 2000);
+        }
+        
+      }, 1000);
     }
   }
 
@@ -157,6 +154,50 @@ export class Game {
         .of(this.url)
         .emit("chatMessage", { server: true, message: message });
     }, 1000);
+  }
+  private getActivities(){
+    Utils.shuffle(this.players);
+    Utils.shuffle(this.activities);
+    let maxActivities = Math.floor(this.players.length / 2);
+    if (this.players.length % 2 == 0){
+      for (let i = 0; i < this.players.length; i++){
+        let x = i % maxActivities;
+        let j = (i + 1) % this.players.length;
+        if (!Array.from(this.activityPlayer.keys()).includes(this.activities[x])){
+          this.activityPlayer.set(this.activities[x], new Array<Player>());
+        }
+        this.activityPlayer.get(this.activities[x])?.push(this.players[i], this.players[j]);
+
+      }
+    }else{
+      if (!this.reversed){
+        let i = 0;
+        let x = 0;
+        while (i < this.players.length){
+          if (!Array.from(this.activityPlayer.keys()).includes(this.activities[x % maxActivities])){
+            this.activityPlayer.set(this.activities[x % maxActivities], new Array<Player>());
+          }
+          this.activityPlayer.get(this.activities[x % maxActivities])?.push(this.players[i], this.players[i+1]);
+          i += 2;
+          x++;
+        }
+      }else{
+        let i = this.players.length - 1;
+        let x = 0;
+        while (i > 0){
+          if (!Array.from(this.activityPlayer.keys()).includes(this.activities[x % maxActivities])){
+            this.activityPlayer.set(this.activities[x % maxActivities], new Array<Player>());
+          }
+          this.activityPlayer.get(this.activities[x % maxActivities])?.push(this.players[i], this.players[i-1]);
+          i -= 2;
+          x++;
+        }
+      }
+      this.reversed = !this.reversed;
+    }
+    for (let i = 0; i++; i < maxActivities){
+      this.activities.slice(0, maxActivities);
+    }
   }
 }
 

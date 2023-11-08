@@ -17,7 +17,7 @@ export class MenuComponent {
   roomId: string = "";
   isServerConnected: boolean = false;
   
-  constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute) {}
+  constructor(private http: HttpClient, public router: Router, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
     this.route.paramMap.subscribe((params: ParamMap) => {
