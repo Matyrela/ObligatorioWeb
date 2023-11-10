@@ -6,6 +6,9 @@ import main from './db';
 
 main().catch(err => console.log(err));
 
+const crypto = require('crypto');
+const sha256 = crypto.createHash('sha256');
+
 let jwt = require('jsonwebtoken');
 
 export class UserHandler {
@@ -41,23 +44,27 @@ export class UserHandler {
         this.userToken = new Map<string, string>();
         this.userPassword = new Map<string, string>();
 
-        app.post('/api/user/login', (req, res) => {
+        app.post('/api/user/login', async (req, res) => {
             let userName = req.body.userName as string;
             let userPassword = req.body.userPassword as string;
+            const hashedPass = sha256.update(userPassword).copy().digest('hex');
 
             if (!(userName == null || userName == "" || userName == undefined || userName.toString().length <= 0) || !(userPassword == null || userPassword == "" || userPassword == undefined || userPassword.toString().length <= 0)) {
-                if (this.userPassword.get(userName) == userPassword) {
-                    let token = this.userToken.get(userName);
-                    if (token == undefined) {
-                        token = jwt.sign({ userName }, 'pelela', { expiresIn: '24h' });
-                        if (token != undefined)
-                            this.userToken.set(userName, token)
+                const dbUser = await UserModel.findOne({ userName: userName }).exec();
+                if (dbUser != null) {
+                    if (hashedPass == dbUser.userPassword) {
+                        let token = this.userToken.get(userName);
+                        if (token == undefined) {
+                            token = jwt.sign({ userName }, 'pelela', { expiresIn: '24h' });
+                            if (token != undefined)
+                                this.userToken.set(userName, token)
+                        }
+                        res.send({ 'token': token, 'login': true }).status(200);
+                        return;
                     }
-                    res.send({ 'token': token, 'login': true }).status(200);
-                    return;
                 }
             }
-            res.send({ 'token': 'null', 'login': false }).status(409);
+            res.send({ 'token': 'null', 'login': false, 'hashedPass': hashedPass }).status(409);
         });
 
         app.post('/api/user/pruebaget', async (req, res) => {
@@ -67,7 +74,7 @@ export class UserHandler {
 
         app.post('/api/user/register', async (req, res) => {
             let userName = req.body.userName as string;
-            let userPassword = req.body.userPassword as string;
+            let userPassword = sha256.update(req.body.userPassword).copy().digest('hex');
 
             if (!(userName == null || userName == "" || userName == undefined || userName.toString().length <= 0) || !(userPassword == null || userPassword == "" || userPassword == undefined || userPassword.toString().length <= 0)) {
                 if (this.userPassword.get(userName) != undefined) {
@@ -79,9 +86,7 @@ export class UserHandler {
 
                 try {
                     const newUser = new UserModel({ userName, userPassword });
-                    console.log(newUser);
                     await newUser.save();
-                    console.log("terminetti");
                     creado = true;
                 } catch (error) {
                     console.error(error);
