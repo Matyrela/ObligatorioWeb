@@ -1,9 +1,10 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, ViewChildren, QueryList } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { env } from '../enviroment';
 import { Activity } from '../clases/activity';
 import { Proposal } from '../clases/proposal';
+import { Console } from 'console';
 
 @Component({
   selector: 'app-create-proposal',
@@ -17,6 +18,9 @@ export class CreateProposalComponent {
   proposals: Proposal[] = []; // Base de datos de propuestas
   description: string = ""; // Descripción de la propuesta
 
+  // Use ViewChildren to get all checkboxes in the template
+  @ViewChildren('activityCheckbox') activityCheckboxes!: QueryList<any>;
+
   constructor(private http: HttpClient, private router: Router) { }
 
   // Obtengo todas las actividades disponibles
@@ -27,9 +31,18 @@ export class CreateProposalComponent {
 
   // Creo una propuesta
   createProposal() {
-    // For que chequea las checkbox. Si están seleccionadas,  las agrega a la lista de actividades seleccionadas
+    //Si están seleccionadas,  las agrega a la lista de actividades seleccionadas
+    console.log("checkboxes: ", this.activityCheckboxes);
+    this.checkedActivities = [];
+    this.activityCheckboxes.forEach((checkbox, index) => {
+      if (checkbox.nativeElement.checked) {
+        this.checkedActivities.push(this.activities[index]);
+      }
+    });
+    console.log("actividades: ", this.checkedActivities);
     this.http.post(
       env.baseURL + '/proposal/create', { description: this.description, token: localStorage.getItem('token'), activityList: this.checkedActivities }).subscribe((data: { [key: string]: any }) => {
+        console.log(data);
         this.updateProposals();
       });
   }
@@ -39,8 +52,6 @@ export class CreateProposalComponent {
       env.baseURL + '/proposal/remove', { id: id }).subscribe((data: { [key: string]: any }) => {
         this.updateProposals();
       });
-    // throw new Error('Method not implemented.'); // Redirigir a la página principal
-
   }
 
   updateProposals() {

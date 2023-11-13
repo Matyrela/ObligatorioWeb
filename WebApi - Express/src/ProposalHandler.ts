@@ -7,7 +7,7 @@ import { Player } from "./Classes/Player";
 
 export class ProposalHandler {
 
-    proposalList: Proposal[] = [new Proposal(0, "enzo", "propuesta prueba", [new Activity(0, "prueba", "prueba")])];
+    proposalList: Proposal[] = [new Proposal(0, "enzo", "propuesta prueba", new Array(new Activity(0, "prueba", "prueba")))];
     proposalID: number = 0;
     playerName: string = "";
     description: string = "";
@@ -49,7 +49,7 @@ export class ProposalHandler {
 
         app.get('/api/proposal/get', (req, res) => {
             let proposals = this.proposalList.filter(proposal => proposal.enabled);
-            res.send({ 'activities': proposals });
+            res.send({ 'proposals': proposals });
             return;
         });
 
