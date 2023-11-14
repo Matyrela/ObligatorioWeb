@@ -14,6 +14,7 @@ export class Game {
 
   activities: Activity[] = [];
   activityPlayer : any[] = [];
+  answers: any[] = [];
   public started: boolean = false;
 
   constructor(name: string, id: string, ws: any) {
@@ -84,6 +85,14 @@ export class Game {
             return;
           }, 5000);
         }
+      });
+      socket.on("submitAnswer", (data: { [key: string]: any }) => {
+        this.answers.push(data['userName']);
+        this.answers.push(data['answer']);
+        this.answers.forEach(element => {
+          console.log(element);
+        });
+        //ws.of(this.url).emit("submitAnswer", data);
       });
     });
   }

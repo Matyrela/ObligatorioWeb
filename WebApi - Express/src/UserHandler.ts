@@ -48,11 +48,14 @@ export class UserHandler {
             let userName = req.body.userName as string;
             let userPassword = req.body.userPassword as string;
             const hashedPass = sha256.update(userPassword).copy().digest('hex');
-
             if (!(userName == null || userName == "" || userName == undefined || userName.toString().length <= 0) || !(userPassword == null || userPassword == "" || userPassword == undefined || userPassword.toString().length <= 0)) {
                 const dbUser = await UserModel.findOne({ userName: userName }).exec();
+                console.log(dbUser);
                 if (dbUser != null) {
-                    if (hashedPass == dbUser.userPassword) {
+                    console.log(dbUser.userPassword);
+                    console.log(hashedPass);
+                    if (hashedPass === dbUser.userPassword && dbUser.userName == userName) {
+                        console.log("LOGIN OK");
                         let token = this.userToken.get(userName);
                         if (token == undefined) {
                             token = jwt.sign({ userName }, 'pelela', { expiresIn: '24h' });
