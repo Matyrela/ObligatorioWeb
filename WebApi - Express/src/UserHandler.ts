@@ -4,7 +4,7 @@ import { GameManager } from "./Classes/GameManager";
 import { UserModel } from "./schemas/userSchema";
 
 const crypto = require('crypto');
-const sha256 = crypto.createHash('sha256');
+let sha256 = crypto.createHash('sha256');
 
 let jwt = require('jsonwebtoken');
 
@@ -56,13 +56,13 @@ export class UserHandler {
         app.post('/api/user/login', async (req, res) => {
             let userName = req.body.userName as string;
             let userPassword = req.body.userPassword as string;
+            sha256 = crypto.createHash('sha256');
             const hashedPass = sha256.update(userPassword).copy().digest('hex');
             if (!(userName == null || userName == "" || userName == undefined || userName.toString().length <= 0) || !(userPassword == null || userPassword == "" || userPassword == undefined || userPassword.toString().length <= 0)) {
                 const dbUser = await UserModel.findOne({ userName: userName }).exec();
                 console.log(dbUser);
+                console.log(hashedPass);
                 if (dbUser != null) {
-                    console.log(dbUser.userPassword);
-                    console.log(hashedPass);
                     if (hashedPass === dbUser.userPassword && dbUser.userName == userName) {
                         console.log("LOGIN OK");
                         let token = this.userToken.get(userName);
@@ -86,11 +86,12 @@ export class UserHandler {
 
         app.post('/api/user/register', async (req, res) => {
             let userName = req.body.userName as string;
+            sha256 = crypto.createHash('sha256');
             let userPassword = sha256.update(req.body.userPassword).copy().digest('hex');
 
             if (!(userName == null || userName == "" || userName == undefined || userName.toString().length <= 0) || !(userPassword == null || userPassword == "" || userPassword == undefined || userPassword.toString().length <= 0)) {
                 if (this.userPassword.get(userName) != undefined) {
-                    res.send({ 'userCreated': false }).status(409);
+                    res.send({ 'userCreated': false, 'quedo': true }).status(409);
                     return;
                 }
                 this.userPassword.set(userName, userPassword);
