@@ -2,9 +2,6 @@ import { Express } from "express";
 import { Player } from "./Classes/Player";
 import { GameManager } from "./Classes/GameManager";
 import { UserModel } from "./schemas/userSchema";
-import main from './db';
-
-main().catch(err => console.log(err));
 
 const crypto = require('crypto');
 const sha256 = crypto.createHash('sha256');
@@ -21,6 +18,14 @@ export class UserHandler {
         return UserHandler.instance;
     }
 
+    private async getUserById(id: string) {
+        return await UserModel.find({ _id: id }).exec();
+    }
+
+    private async getUserByUserName(name: string) {
+        return await UserModel.find({ userName: name }).exec();
+    }
+
     getPlayer(token: string): Player | null {
         let player: Player | null = null;
         let name: string = '';
@@ -29,6 +34,10 @@ export class UserHandler {
             if (this.userToken.get(element) == token)
                 name = element;
         });
+
+        console.log("name="+name);
+        console.log("tokens="+JSON.stringify(this.userToken.keys()));
+
         if (name != '') {
             GameManager.getInstance().getPlayers().forEach(element => {
                 if (element.name == name)
@@ -67,7 +76,7 @@ export class UserHandler {
                     }
                 }
             }
-            res.send({ 'token': 'null', 'login': false, 'hashedPass': hashedPass }).status(409);
+            res.send({ 'token': 'null', 'login': false}).status(409);
         });
 
         app.post('/api/user/pruebaget', async (req, res) => {
@@ -108,6 +117,23 @@ export class UserHandler {
             }
 
             res.send({ 'userCreated': false }).status(201);
+        });
+
+        app.post('/api/user/expired', (req, res) => {
+            const token = req.body.token as string;
+            if (token) {
+                try {
+                    const decoded = jwt.verify(token, 'pelela');
+                    const expirationDate = new Date(decoded.exp * 1000);
+                    const now = new Date();
+                    const expired = now > expirationDate;
+                    res.send({ expired }).status(200);
+                    return;
+                } catch (err) {
+                    console.log(err);
+                }
+            }
+            res.send({ expired: true }).status(200);
         });
 
         app.post('/api/user/validate', (req, res) => {
