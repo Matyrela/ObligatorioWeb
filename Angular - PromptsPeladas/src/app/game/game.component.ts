@@ -3,8 +3,9 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { env } from '../enviroment';
 import { io } from "socket.io-client";
-import { Activity } from '../clases/activity';
+import { Activity } from '../../app/clases/activity';
 import { Player } from '../clases/Player';
+import { type } from 'os';
 
 @Component({
   selector: 'app-game',
@@ -47,19 +48,14 @@ export class GameComponent {
     });
 
     this.ws.on('activityPlayer', (data: { [key: string]: any }) => {
-      console.log("ESTO SE RECIBIÓ");
-      console.log(data);
-      let culo = JSON.parse(data['activityPlayer'])as Map<Activity, Player[]>;
-      (Array.from(culo.keys())).forEach((element: any) => {
-        culo.get(element)?.forEach((element2: Player) => {
-          if (element2.name == localStorage.getItem('userName')) {
-            this.activities.push(element as Activity);
-          }
-        });
-      });
-      console.log("ACTIVITIES:");
-      console.log(this.activities.length);
-    });
+      let content = data['activityPlayer'];
+      let i = 0;
+      while (i < content.length - 1) {
+        if (content[i+1].name == localStorage.getItem("userName") || content[i + 2].name == localStorage.getItem("userName")){
+          this.activities.push(content[i]);
+        }
+        i += 3;
+    }});
 
     this.ws.on('newStage', (data: { [key: string]: any }) => {
       console.log("NEW STAGE");
@@ -88,6 +84,6 @@ export class GameComponent {
       }
 
       this.timer = data['timer'];
-    })
+    });
   }
 }

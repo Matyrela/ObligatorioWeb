@@ -1,6 +1,17 @@
-export interface Activity {
+export class Activity {
     id: number;
     playerName: string;
     description: string;
-    habilitado: boolean;
+    enabled: boolean;
+
+    constructor(id: number, playerName: string, description: string) {
+        this.id = id;
+        this.playerName = playerName;
+        this.description = description;
+        this.enabled = true;
+    }
+
+    public disableActivity() {
+        this.enabled = false;
+    }
 }
