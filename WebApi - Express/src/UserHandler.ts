@@ -58,7 +58,6 @@ export class UserHandler {
             let userPassword = req.body.userPassword as string;
             sha256 = crypto.createHash('sha256');
             const hashedPass = sha256.update(userPassword).copy().digest('hex');
-
             if (!(userName == null || userName == "" || userName == undefined || userName.toString().length <= 0) || !(userPassword == null || userPassword == "" || userPassword == undefined || userPassword.toString().length <= 0)) {
                 const dbUser = await UserModel.findOne({ userName: userName }).exec();
                 console.log(dbUser);
