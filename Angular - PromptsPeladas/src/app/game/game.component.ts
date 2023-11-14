@@ -19,11 +19,14 @@ export class GameComponent {
   activities: Activity[] = [];
   stage:number = 0;
   answer: string = "";
+  votation : boolean = false;
 
   anwserSubmitted: boolean = false;
 
   timer: string = "--";
   show: boolean = false;
+
+
 
   constructor(private http: HttpClient, private router: Router) { }
 
@@ -38,7 +41,7 @@ export class GameComponent {
 
   submitAnswer() {
     this.anwserSubmitted = true;
-    this.ws.emit('submitAnswer', { 'username': localStorage.getItem("userName"), 'answer': this.answer });
+    this.ws.emit('submitAnswer', { 'userName': localStorage.getItem("userName"), 'answer': this.answer });
     this.answer = "";
   }
 
@@ -58,8 +61,6 @@ export class GameComponent {
     }});
 
     this.ws.on('newStage', (data: { [key: string]: any }) => {
-      console.log("NEW STAGE");
-      console.log("---------------------");
       this.show = true;
       this.anwserSubmitted = false;
       setTimeout(() => {
@@ -72,13 +73,14 @@ export class GameComponent {
       console.log(data['stage']);
       console.log("---------------------");
       this.stage = data['stage'];
+      console.log(this.stage);
+      if(this.stage == 2){
+        console.log("VOTACION");
+        this.votation = true;
+      }
     });
 
     this.ws.on("timer", (data: { [key: string]: any }) => {
-      console.log("TIMER:");
-      console.log(data['timer']);
-      console.log("---------------------");
-
       if (data['timer'] == "¡Se acabó el tiempo!") {
         this.submitAnswer();
       }

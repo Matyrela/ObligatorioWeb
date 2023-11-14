@@ -4,6 +4,9 @@ import { GameHandler } from './GameHandler';
 import { UserHandler } from './UserHandler';
 import { createServer } from "http";
 import { ActivityHandler } from './ActivityHandler';
+import main from './db';
+
+main().catch(err => console.log(err));
 
 const app = express()
 var corsOptions = {

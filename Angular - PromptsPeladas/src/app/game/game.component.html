@@ -27,11 +27,19 @@
         <br>
         <hr>
         <br>
-        <textarea class="form-control" rows="2" [(ngModel)]="answer" placeholder="¡Responde aqui!"></textarea>
-        <div class="text-center">
-            <br>
-            <button type="button" class="btn btn-primary btn-lg btn-block btn-prompt" (click)="submitAnswer()">Submit</button>
+        <div *ngIf="votation == false">
+          <textarea class="form-control" rows="2" [(ngModel)]="answer" placeholder="¡Responde aqui!"></textarea>
+          <div class="text-center">
+              <br>
+              <button type="button" class="btn btn-primary btn-lg btn-block btn-prompt" (click)="submitAnswer()">Submit</button>
+          </div>
         </div>
+        <div class="container votationHolder" *ngIf="votation == true" style="display: flex;">
+          <button>buenardo</button>
+          <button>una pija</button>
+          <button>para que existo</button>
+        </div>
+        
       </div>
     </div>
   </div>

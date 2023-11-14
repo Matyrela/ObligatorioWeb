@@ -87,12 +87,12 @@ export class Game {
         }
       });
       socket.on("submitAnswer", (data: { [key: string]: any }) => {
+        console.log(data['userName']);
         this.answers.push(data['userName']);
         this.answers.push(data['answer']);
         this.answers.forEach(element => {
           console.log(element);
         });
-        //ws.of(this.url).emit("submitAnswer", data);
       });
     });
   }
@@ -103,6 +103,7 @@ export class Game {
   public startAnswerTimer() {
     if (this.stage == 2) {
       console.log("TERMINO");
+      this.ws.of(this.url).emit("stage", { "stage": this.stage })
       return;
     } else {
       this.ws.of(this.url).emit("newStage");
