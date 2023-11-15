@@ -18,12 +18,30 @@ export class UserHandler {
         return UserHandler.instance;
     }
 
-    private async getUserById(id: string) {
-        return await UserModel.find({ _id: id }).exec();
+    private async getUserByToken(token: string) {
+        return await UserModel.find({ userToken: token }).exec();
     }
 
     private async getUserByUserName(name: string) {
         return await UserModel.find({ userName: name }).exec();
+    }
+
+    private async getUserToken(name: string) {
+        let res = await UserModel.find({ userName: name }).exec();
+        return res[0].userToken;
+    }
+
+    private verificarTokenExpirado(token: string) {
+        try {
+            const decoded = jwt.verify(token, 'pelela');
+
+            const expiracion = new Date(decoded.exp * 1000);
+            const ahora = new Date();
+
+            return expiracion > ahora;
+        } catch (error) {
+            return false;
+        }
     }
 
     getPlayer(token: string): Player | null {
@@ -35,8 +53,8 @@ export class UserHandler {
                 name = element;
         });
 
-        console.log("name="+name);
-        console.log("tokens="+JSON.stringify(this.userToken.keys()));
+        console.log("name=" + name);
+        console.log("tokens=" + JSON.stringify(this.userToken.keys()));
 
         if (name != '') {
             GameManager.getInstance().getPlayers().forEach(element => {
@@ -66,18 +84,23 @@ export class UserHandler {
                 if (dbUser != null) {
                     if (hashedPass === dbUser.userPassword && dbUser.userName == userName) {
                         console.log("LOGIN OK");
-                        let token = this.userToken.get(userName);
-                        if (token == undefined) {
+                        let token = await this.getUserToken(userName);
+                        if (token == undefined || !this.verificarTokenExpirado(token)) {
                             token = jwt.sign({ userName }, 'pelela', { expiresIn: '24h' });
                             if (token != undefined)
                                 this.userToken.set(userName, token)
                         }
+                        await UserModel.findOneAndUpdate(
+                            { userName: userName },
+                            { $set: { userToken: token } },
+                            { new: true }
+                        )
                         res.send({ 'token': token, 'login': true }).status(200);
                         return;
                     }
                 }
             }
-            res.send({ 'token': 'null', 'login': false}).status(409);
+            res.send({ 'token': 'null', 'login': false }).status(409);
         });
 
         app.post('/api/user/pruebaget', async (req, res) => {
@@ -138,13 +161,20 @@ export class UserHandler {
             res.send({ expired: true }).status(200);
         });
 
-        app.post('/api/user/validate', (req, res) => {
+        app.post('/api/user/validate', async (req, res) => {
             let token = req.body.token as string;
             if (token != undefined) {
                 try {
                     let decoded = jwt.verify(token, 'pelela');
-                    let userName = decoded.userName;
-                    if (this.userToken.get(userName) == token) {
+                    let userDB = await this.getUserByUserName(token);
+                    if (userDB != null) {
+                        const expirationDate = new Date(decoded.exp * 1000);
+                        const now = new Date();
+                        const expired = now > expirationDate;
+                        if (expired) {
+                            res.send({ 'valid': false }).status(200);
+                            return;
+                        }
                         res.send({ 'valid': true }).status(200);
                         return;
                     }

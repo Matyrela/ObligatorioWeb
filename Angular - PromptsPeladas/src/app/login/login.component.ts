@@ -75,7 +75,7 @@ export class LoginComponent {
         }
       });
     }
-
+    console.log(token);
     //Chanchada abajo no mirar mucho
     document.body.style.backgroundColor = '#3f3f3f';
   }
