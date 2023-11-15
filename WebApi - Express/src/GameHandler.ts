@@ -11,6 +11,7 @@ export class GameHandler {
             let roomGame = req.body.roomName as string;
             let token: string = req.body.token as string;
             let player: null | Player = UserHandler.getInstance().getPlayer(token);
+            console.log(player);
             let gameCreated;
                 if(roomGame != null && roomGame != "" && roomGame != undefined && roomGame.length > 0 && player != null) {
                     gameCreated = GameManager.getInstance().createGame(roomGame, player, ws);

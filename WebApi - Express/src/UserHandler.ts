@@ -2,6 +2,7 @@ import { Express } from "express";
 import { Player } from "./Classes/Player";
 import { GameManager } from "./Classes/GameManager";
 import { UserModel } from "./schemas/userSchema";
+import { Game } from "./Classes/Game";
 
 const crypto = require('crypto');
 let sha256 = crypto.createHash('sha256');
@@ -47,15 +48,10 @@ export class UserHandler {
     getPlayer(token: string): Player | null {
         let player: Player | null = null;
         let name: string = '';
-
         Array.from(this.userToken.keys()).forEach(element => {
             if (this.userToken.get(element) == token)
                 name = element;
         });
-
-        console.log("name=" + name);
-        console.log("tokens=" + JSON.stringify(this.userToken.keys()));
-
         if (name != '') {
             GameManager.getInstance().getPlayers().forEach(element => {
                 if (element.name == name)
@@ -76,11 +72,8 @@ export class UserHandler {
             let userPassword = req.body.userPassword as string;
             sha256 = crypto.createHash('sha256');
             const hashedPass = sha256.update(userPassword).copy().digest('hex');
-
             if (!(userName == null || userName == "" || userName == undefined || userName.toString().length <= 0) || !(userPassword == null || userPassword == "" || userPassword == undefined || userPassword.toString().length <= 0)) {
                 const dbUser = await UserModel.findOne({ userName: userName }).exec();
-                console.log(dbUser);
-                console.log(hashedPass);
                 if (dbUser != null) {
                     if (hashedPass === dbUser.userPassword && dbUser.userName == userName) {
                         console.log("LOGIN OK");
@@ -95,6 +88,11 @@ export class UserHandler {
                             { $set: { userToken: token } },
                             { new: true }
                         )
+                        let gm = GameManager.getInstance();
+                        if (!gm.isPlayerInPlayers(userName)) {
+                            let player = new Player(userName);
+                            gm.addPlayer(player);
+                        }
                         res.send({ 'token': token, 'login': true }).status(200);
                         return;
                     }
@@ -133,6 +131,7 @@ export class UserHandler {
 
                 let player = new Player(userName);
                 GameManager.getInstance().addPlayer(player);
+                //se añade el player a la lista de players del gameManager pero al reiniciar la api se pierde esta lista
                 if (creado) {
                     res.send({ 'userCreated': true });
                 } else {
