@@ -19,8 +19,8 @@ export class UserHandler {
         return UserHandler.instance;
     }
 
-    private async getUserByToken(token: string) {
-        return await UserModel.find({ userToken: token }).exec();
+    public async getUserByToken(token: string) {
+        return (await UserModel.find({ userToken: token }).exec())[0];
     }
 
     private async getUserByUserName(name: string) {
