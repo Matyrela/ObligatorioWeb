@@ -20,13 +20,13 @@ export class CreateActivityComponent {
     this.updateActivities();
   }
 
-  removeActivity(id: number) {
+  removeActivity(id: string) {
+    console.log(id);
     this.http.put(
       env.baseURL + '/activity/remove', { id: id}).subscribe((data: { [key: string]: any }) => {
         this.updateActivities();
       });
     // throw new Error('Method not implemented.'); // Redirigir a la página principal
-
   }
 
   addActivity() {
@@ -42,8 +42,8 @@ export class CreateActivityComponent {
   }
 
   updateActivities() {
-    this.http.get(
-      env.baseURL + '/activity/get').subscribe((data: { [key: string]: any }) => {
+    this.http.post(
+      env.baseURL + '/activity/get', { token: localStorage.getItem('token') }).subscribe((data: { [key: string]: any }) => {
         this.activities = data['activities'];
       });
   }

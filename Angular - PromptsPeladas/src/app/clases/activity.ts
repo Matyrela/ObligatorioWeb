@@ -1,12 +1,12 @@
 export class Activity {
-    id: number;
-    playerName: string;
+    _id: string;
+    player_id: string;
     description: string;
     enabled: boolean;
 
-    constructor(id: number, playerName: string, description: string) {
-        this.id = id;
-        this.playerName = playerName;
+    constructor(id: string, playerName: string, description: string) {
+        this._id = id;
+        this.player_id = playerName;
         this.description = description;
         this.enabled = true;
     }
