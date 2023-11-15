@@ -1,5 +1,6 @@
 import { Game } from "./Game";
 import { Player } from "./Player";
+import { UserModel } from "../schemas/userSchema";
 export class GameManager {
     
     static instance: GameManager;
@@ -26,7 +27,21 @@ export class GameManager {
         return true;
     }
     getPlayers(): Array<Player> {
+        let playersdb = UserModel.find().exec();
         return Array.from(this.players.keys());
+    }
+    public isPlayerInPlayers(name : string) : boolean{
+        let check = false;
+        Array.from(this.players.keys()).forEach(element => {
+            if(element.name == name){
+                check = true;
+            }            
+        });
+        if(check){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     createGame(roomName: string, player: Player, ws: any): Game {
