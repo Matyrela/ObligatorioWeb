@@ -69,9 +69,9 @@ export class GameHandler {
             }
         });
 
-        app.post('/api/game/reconnect', (req, res) => {
+        app.post('/api/game/reconnect', async (req, res) => {
             let token = req.body.token as string;
-            let player = UserHandler.getInstance().getPlayer(token);
+            let player = await UserHandler.getInstance().getPlayer(token);
             let gm = GameManager.getInstance();
             if (player != null && player != undefined) {
                 let code = gm.checkPlayerInGame(player);
@@ -85,9 +85,9 @@ export class GameHandler {
             }
         });
 
-        app.post('/api/game/quit', (req, res) => {
+        app.post('/api/game/quit', async (req, res) => {
             let token = req.body.token as string;
-            let player = UserHandler.getInstance().getPlayer(token);
+            let player = await UserHandler.getInstance().getPlayer(token);
             let gm = GameManager.getInstance();
             if (player != null && player != undefined) {
                 let code = gm.checkPlayerInGame(player);

@@ -45,18 +45,11 @@ export class UserHandler {
         }
     }
 
-    getPlayer(token: string): Player | null {
+    async getPlayer(token: string): Promise<Player | null> {
         let player: Player | null = null;
-        let name: string = '';
-        Array.from(this.userToken.keys()).forEach(element => {
-            if (this.userToken.get(element) == token)
-                name = element;
-        });
-        if (name != '') {
-            GameManager.getInstance().getPlayers().forEach(element => {
-                if (element == name)
-                    player = new Player(element);
-            });
+        let userDB = await this.getUserByToken(token);
+        if (userDB != null && userDB[0].userName != undefined) {
+            player = new Player(userDB[0]?.userName);
         }
         return player;
     }

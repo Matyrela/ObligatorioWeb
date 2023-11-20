@@ -22,30 +22,35 @@ export class ActivityHandler {
             } else {
                 res.status(500).json({ error: 'player not found' });
             }
-          
-            return;
-        });
-  /*
-        app.post('/api/activity/create', (req, res) => {
-            let token = req.body.token as string;
-            let player = UserHandler.getInstance().getPlayer(token) as Player;
-            if (player != null) {
-                let playerName = player?.name;
-                let description = req.body.description as string;
-                console.log(playerName);
-                console.log(description);
 
-                let newActivity = new Activity(this.activityList.length, playerName, description);
-                this.activityList.push(newActivity);
-                res.send({ 'activityCreated': true });
-                return;
-            } else {
-                console.log("player null");
-            }
-  
             return;
         });
-*/
+
+        app.get('/api/activity/getAll', async (req, res) => {
+            let activities = await ActivityModel.find({ enabled: true }).exec();
+            res.send({ 'activities': activities }).status(200);
+        });
+        /*
+              app.post('/api/activity/create', (req, res) => {
+                  let token = req.body.token as string;
+                  let player = UserHandler.getInstance().getPlayer(token) as Player;
+                  if (player != null) {
+                      let playerName = player?.name;
+                      let description = req.body.description as string;
+                      console.log(playerName);
+                      console.log(description);
+      
+                      let newActivity = new Activity(this.activityList.length, playerName, description);
+                      this.activityList.push(newActivity);
+                      res.send({ 'activityCreated': true });
+                      return;
+                  } else {
+                      console.log("player null");
+                  }
+        
+                  return;
+              });
+      */
         app.post('/api/activity/create', async (req, res) => {
             let token = req.body.token as string;
             let description = req.body.description as string;

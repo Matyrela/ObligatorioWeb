@@ -40,6 +40,7 @@ export class CreateProposalComponent {
       }
     });
     console.log("actividades: ", this.checkedActivities);
+    
     this.http.post(
       env.baseURL + '/proposal/create', { description: this.description, token: localStorage.getItem('token'), activityList: this.checkedActivities }).subscribe((data: { [key: string]: any }) => {
         console.log(data);
@@ -47,7 +48,7 @@ export class CreateProposalComponent {
       });
   }
 
-  removeProposal(id: number) {
+  removeProposal(id: string) {
     this.http.put(
       env.baseURL + '/proposal/remove', { id: id }).subscribe((data: { [key: string]: any }) => {
         this.updateProposals();
@@ -55,15 +56,16 @@ export class CreateProposalComponent {
   }
 
   updateProposals() {
-    this.http.get(
-      env.baseURL + '/proposal/get').subscribe((data: { [key: string]: any }) => {
-        this.proposals = data['proposals'];
-      });
+    this.http.post(
+    env.baseURL + '/proposal/get', { token: localStorage.getItem('token'), activityList: this.checkedActivities }).subscribe((data: { [key: string]: any }) => {
+      console.log(data);
+      this.proposals = data['proposals'];
+    });
   }
 
   updateActivities() {
     this.http.get(
-      env.baseURL + '/activity/get').subscribe((data: { [key: string]: any }) => {
+      env.baseURL + '/activity/getAll').subscribe((data: { [key: string]: any }) => {
         this.activities = data['activities'];
       });
   }
