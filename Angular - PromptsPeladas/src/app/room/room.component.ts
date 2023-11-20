@@ -39,6 +39,9 @@ export class RoomComponent {
     env.baseURL + '/game/get', {
       token : localStorage.getItem('token')
     }).subscribe((data: { [key: string]: any }) => {
+
+      console.log(data);
+
       this.code = data['code'];
       this.roomName = data['roomName'];
       this.conStatus = data['status'];
@@ -51,6 +54,7 @@ export class RoomComponent {
         if (error) console.error(error)
       })
     });
+
 
     this.documentVisibilityService.getVisibilityChangeObservable()
     .subscribe(isVisible => {
@@ -123,41 +127,47 @@ export class RoomComponent {
       });
     });
 
-    this.ws.on("playerList", (data: { [key: string]: any }) => {
-      this.playerList = data['map']((element: any) => ({ name: element.name, status: element.status}));
-    
+    this.ws.on("playerList", (data: { [key: string]: any }[]) => {
+      data.forEach((playerName) => {
+        const existingPlayer = this.playerList.find(player => player.name === playerName+"");
+
+        if (!existingPlayer) {
+            const player = new Player(playerName+"");
+            this.playerList.push(player);
+        }
+    });
+
       const addedPlayers = this.playerList.filter(player => !this.previousPlayerList.some(prevPlayer => prevPlayer.name === player.name));
       const removedPlayers = this.previousPlayerList.filter(prevPlayer => !this.playerList.some(player => player.name === prevPlayer.name));
-    
+  
       if (this.previousPlayerList.length > 0) {
-        addedPlayers.forEach(player => {
-          Toastify({
-            text: `¡${player.name} se ha unido!`,
-            duration: 3000,
-            gravity: "top",
-            position: "right",
-            style: {
-              background: "#0d6efd",
-            },
-          }).showToast();
-        });
-    
-        removedPlayers.forEach(player => {
-          Toastify({
-            text: `¡${player.name} se ha desconectado!`,
-            duration: 3000,
-            gravity: "top",
-            position: "right",
-            style: {
-              background: "#ff0000",
-            },
-          }).showToast();
-        });
+          addedPlayers.forEach(player => {
+              Toastify({
+                  text: `¡${player.name} se ha unido!`, // Usar player.name en lugar de player
+                  duration: 3000,
+                  gravity: "top",
+                  position: "right",
+                  style: {
+                      background: "#0d6efd",
+                  },
+              }).showToast();
+          });
+  
+          removedPlayers.forEach(player => {
+              Toastify({
+                  text: `¡${player.name} se ha desconectado!`, // Usar player.name en lugar de player
+                  duration: 3000,
+                  gravity: "top",
+                  position: "right",
+                  style: {
+                      background: "#ff0000",
+                  },
+              }).showToast();
+          });
       }
-    
-      this.previousPlayerList = this.playerList;
-    });
-    
+  
+      this.previousPlayerList = this.playerList.slice(); // Hacer una copia para evitar referencias directas
+  });
 
     this.ws.on("adminChange", (data: { [key: string]: any }) => {
       this.admin = data['name'];

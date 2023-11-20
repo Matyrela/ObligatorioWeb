@@ -36,15 +36,6 @@ export class GameHandler {
                 if (game != undefined && game != null) {
                     let user = await UserHandler.getInstance().getUserByToken(token);
                     let player: null | Player = new Player(user[0].userName as string);
-                    /*
-                    TypeError: Cannot read properties of undefined (reading 'userName')
-                        at GameHandler.<anonymous> (/home/matias/Cursos/WEB/ObligatorioWeb/WebApi - Express/src/GameHandler.ts:38:68)
-                        at Generator.next (<anonymous>)
-                        at fulfilled (/home/matias/Cursos/WEB/ObligatorioWeb/WebApi - Express/src/GameHandler.ts:5:58)
-                        at processTicksAndRejections (node:internal/process/task_queues:95:5)
-                    [ERROR] 10:59:11 TypeError: Cannot read properties of undefined (reading 'userName')
-                     */
-                    throw new Error("Arreglame Laion, GameHandler.ts :38,68");
                     if (player != null) {
                         if (!game.started || game.players.includes(player.name)) {
                             gameManager.joinGame(player, game);
