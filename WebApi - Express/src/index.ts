@@ -4,8 +4,8 @@ import { GameHandler } from './GameHandler';
 import { UserHandler } from './UserHandler';
 import { createServer } from "http";
 import { ActivityHandler } from './ActivityHandler';
+import { ProposalHandler } from './ProposalHandler';
 import main from './db';
-
 main().catch(err => console.log(err));
 
 const app = express()
@@ -28,6 +28,7 @@ let ws = require('socket.io')(httpServer, {
 new GameHandler(app, ws);
 new UserHandler(app);
 new ActivityHandler(app);
+new ProposalHandler(app);
 
 app.get('/api/ping', (req, res) => {
     res.send({'ping' : 'pong'});
