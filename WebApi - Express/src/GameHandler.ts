@@ -5,61 +5,67 @@ import { UserHandler } from './UserHandler';
 
 
 export class GameHandler {
-    constructor(app: Express, ws: any) {    
-        
-        app.post('/api/game/create', (req, res) => { 
+    constructor(app: Express, ws: any) {
+
+        app.post('/api/game/create', async (req, res) => {
             let roomGame = req.body.roomName as string;
             let token: string = req.body.token as string;
-            let player: null | Player = UserHandler.getInstance().getPlayer(token);
-            console.log(player);    
-            let gameCreated;
-                if(roomGame != null && roomGame != "" && roomGame != undefined && roomGame.length > 0 && player != null) {
+            let user = await UserHandler.getInstance().getUserByToken(token);
+            if (user != null) {
+                let player: null | Player = new Player(user.userName as string);
+                let gameCreated;
+                if (roomGame != null && roomGame != "" && roomGame != undefined && roomGame.length > 0 && player != null) {
                     gameCreated = GameManager.getInstance().createGame(roomGame, player, ws);
                 }
-            
-                if(gameCreated?.id != null) {   
-                    res.send({'gameCreated' : true , 'code' : gameCreated.id});
+
+                if (gameCreated?.id != null) {
+                    res.send({ 'gameCreated': true, 'code': gameCreated.id });
                     return;
                 }
+            }
 
-        
-            res.send({'gameCreated' : false, 'code' : 'INVALID'});    
+            res.send({ 'gameCreated': false, 'code': 'INVALID' });
         });
-        
-        app.post('/api/game/join', (req, res) => {
+
+        app.post('/api/game/join', async (req, res) => {
             let code = req.body.code as string;
             let token = req.body.token as string;
-            if(code != null && code != "" && code != undefined && code.toString().length > 0) {
+            if (code != null && code != "" && code != undefined && code.toString().length > 0) {
                 let gameManager = GameManager.getInstance();
                 let game = gameManager.getGame(code);
-                if(game != undefined && game != null) {
-                    let player = UserHandler.getInstance().getPlayer(token);
+                if (game != undefined && game != null) {
+                    let user = await UserHandler.getInstance().getUserByToken(token);
+                    let player: null | Player = new Player(user.userName as string);
                     if (player != null) {
-                        if(!game.started || game.players.includes(player)){
+                        if (!game.started || game.players.includes(player)) {
                             gameManager.joinGame(player, game);
-                            res.send({'joined' : true});
+                            res.send({ 'joined': true });
                             return;
                         }
                     }
                 }
             }
-            res.send({'joined' : false});
+            res.send({ 'joined': false });
         });
 
-        app.post('/api/game/get', (req, res) => {
+        app.post('/api/game/get', async (req, res) => {
             let token = req.body.token as string;
-            let player = UserHandler.getInstance().getPlayer(token);
-            if(player != null) {
+            let user = await UserHandler.getInstance().getUserByToken(token);
+            let player: null | Player = new Player(user.userName as string);
+            console.log(player);
+            if (player != null) {
                 let gameManager = GameManager.getInstance();
-                let code : string = gameManager.checkPlayerInGame(player);
-                if(code != undefined && code != null) {
+                let code: string = gameManager.checkPlayerInGame(player);
+                console.log(code);
+                if (code != undefined && code != null) {
                     let game = gameManager.getGame(code);
+                    console.log("la tenes adentro");
                     res.send({
-                        'code' : code,
-                        'roomName' : game?.name,
-                        'players' : game?.players,
-                        'status' : game?.status,
-                        'admin' : game?.adminPlayer
+                        'code': code,
+                        'roomName': game?.name,
+                        'players': game?.players,
+                        'status': game?.status,
+                        'admin': game?.adminPlayer
                     });
                     return;
                 }
@@ -70,33 +76,33 @@ export class GameHandler {
             let token = req.body.token as string;
             let player = UserHandler.getInstance().getPlayer(token);
             let gm = GameManager.getInstance();
-            if (player != null && player != undefined){
+            if (player != null && player != undefined) {
                 let code = gm.checkPlayerInGame(player);
                 if (code != 'INVALID') {
                     let game = gm.getGame(code);
                     if (game != undefined && game != null) {
-                        res.send({'code' : code, 'started' : game.started});
+                        res.send({ 'code': code, 'started': game.started });
                         return;
                     }
                 }
-            }   
+            }
         });
 
         app.post('/api/game/quit', (req, res) => {
             let token = req.body.token as string;
             let player = UserHandler.getInstance().getPlayer(token);
             let gm = GameManager.getInstance();
-            if (player != null && player != undefined){
+            if (player != null && player != undefined) {
                 let code = gm.checkPlayerInGame(player);
                 if (code != 'INVALID') {
                     gm.removePlayer(player, code);
-                    res.send({"removed" : true})
+                    res.send({ "removed": true })
                     return;
                 }
             }
 
-            res.send({"removed" : false})
+            res.send({ "removed": false })
         });
-        
-    }   
+
+    }
 }
