@@ -44,11 +44,11 @@
                     <ul class="list-group">
                         <li class="list-group-item" *ngFor="let proposal of proposals">
                             <button type="button" class="close" aria-label="Close"
-                                (click)="removeProposal(proposal.id)">
+                                (click)="removeProposal(proposal._id)">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                             <span>  {{proposal.description}} </span>
-                            <span style="color: gray; opacity: 0.8 "> {{proposal.playerName}}</span>
+                            <span style="color: gray; opacity: 0.8 "> {{proposal.player_id}}</span>
                         </li>
                     </ul>
                 </div>

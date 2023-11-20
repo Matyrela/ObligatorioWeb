@@ -7,10 +7,10 @@ import { UserHandler } from './UserHandler';
 export class GameHandler {
     constructor(app: Express, ws: any) {    
         
-        app.post('/api/game/create', (req, res) => { 
+        app.post('/api/game/create', async (req, res) => { 
             let roomGame = req.body.roomName as string;
             let token: string = req.body.token as string;
-            let player: null | Player = UserHandler.getInstance().getPlayer(token);
+            let player: null | Player = await UserHandler.getInstance().getPlayer(token);
             console.log(player);
             let gameCreated;
                 if(roomGame != null && roomGame != "" && roomGame != undefined && roomGame.length > 0 && player != null) {
@@ -26,14 +26,14 @@ export class GameHandler {
             res.send({'gameCreated' : false, 'code' : 'INVALID'});    
         });
         
-        app.post('/api/game/join', (req, res) => {
+        app.post('/api/game/join', async (req, res) => {
             let code = req.body.code as string;
             let token = req.body.token as string;
             if(code != null && code != "" && code != undefined && code.toString().length > 0) {
                 let gameManager = GameManager.getInstance();
                 let game = gameManager.getGame(code);
                 if(game != undefined && game != null) {
-                    let player = UserHandler.getInstance().getPlayer(token);
+                    let player = await UserHandler.getInstance().getPlayer(token);
                     if (player != null) {
                         if(!game.started || game.players.includes(player)){
                             gameManager.joinGame(player, game);
@@ -46,9 +46,9 @@ export class GameHandler {
             res.send({'joined' : false});
         });
 
-        app.post('/api/game/get', (req, res) => {
+        app.post('/api/game/get', async (req, res) => {
             let token = req.body.token as string;
-            let player = UserHandler.getInstance().getPlayer(token);
+            let player = await UserHandler.getInstance().getPlayer(token);
             if(player != null) {
                 let gameManager = GameManager.getInstance();
                 let code : string = gameManager.checkPlayerInGame(player);
@@ -66,9 +66,9 @@ export class GameHandler {
             }
         });
 
-        app.post('/api/game/reconnect', (req, res) => {
+        app.post('/api/game/reconnect', async (req, res) => {
             let token = req.body.token as string;
-            let player = UserHandler.getInstance().getPlayer(token);
+            let player = await UserHandler.getInstance().getPlayer(token);
             let gm = GameManager.getInstance();
             if (player != null && player != undefined){
                 let code = gm.checkPlayerInGame(player);
@@ -82,9 +82,9 @@ export class GameHandler {
             }   
         });
 
-        app.post('/api/game/quit', (req, res) => {
+        app.post('/api/game/quit', async (req, res) => {
             let token = req.body.token as string;
-            let player = UserHandler.getInstance().getPlayer(token);
+            let player = await UserHandler.getInstance().getPlayer(token);
             let gm = GameManager.getInstance();
             if (player != null && player != undefined){
                 let code = gm.checkPlayerInGame(player);
