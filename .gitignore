@@ -1,0 +1,9 @@
+# Ignorar carpetas node_modules en el directorio raíz y subdirectorios
+/node_modules/
+/webapi/node_modules/
+/Angular - PromptsPeladas/node_modules/
+
+# Ignorar archivos package.json en el directorio raíz y subdirectorios
+/package.json
+/webapi/package.json
+/Angular - PromptsPeladas/package.json

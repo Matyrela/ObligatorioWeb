@@ -5,6 +5,8 @@ import { UserHandler } from './UserHandler';
 import { createServer } from "http";
 import { ActivityHandler } from './ActivityHandler';
 import { ProposalHandler } from './ProposalHandler';
+import main from './db';
+main().catch(err => console.log(err));
 
 const app = express()
 var corsOptions = {

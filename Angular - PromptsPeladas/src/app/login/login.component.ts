@@ -10,9 +10,9 @@ import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 })
 export class LoginComponent {
 
-  constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute){}
+  constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute) { }
 
-  reg:boolean = false;
+  reg: boolean = false;
 
   userName: string = "";
   userPassword: string = "";
@@ -21,18 +21,18 @@ export class LoginComponent {
   statusTitle: string = "";
   status: string = "";
 
-  login(){
+  login() {
     this.statusTitle = "";
     this.status = "";
 
     this.http.post(
-    env.baseURL + '/user/login', {userName: this.userName, userPassword: this.userPassword}
+      env.baseURL + '/user/login', { userName: this.userName, userPassword: this.userPassword }
     ).subscribe((data: { [key: string]: any }) => {
-      if(data['login'] == true){
+      if (data['login'] == true) {
         localStorage.setItem('token', data['token']);
         localStorage.setItem('userName', this.userName);
         this.router.navigate(['']);
-      }else{
+      } else {
         localStorage.setItem('token', 'null');
         localStorage.setItem('userName', 'null');
         this.statusTitle = "Error";
@@ -41,24 +41,24 @@ export class LoginComponent {
     });
   }
 
-  register(){
+  register() {
     this.statusTitle = "";
     this.status = "";
-    
-    if(this.userPassword == this.userPassword2){
+
+    if (this.userPassword == this.userPassword2) {
       this.http.post(
-        env.baseURL + '/user/register', {userName: this.userName, userPassword: this.userPassword}
+        env.baseURL + '/user/register', { userName: this.userName, userPassword: this.userPassword }
       ).subscribe((data: { [key: string]: any }) => {
-        if(data['userCreated'] === true){
+        if (data['userCreated'] === true) {
           this.statusTitle = "Success";
           this.status = "Usuario creado con éxito";
           this.reg = false;
-        }else{
+        } else {
           this.statusTitle = "Error";
           this.status = "El usuario ya existe";
         }
       });
-    }else{
+    } else {
       this.statusTitle = "Error";
       this.status = "Las contraseñas no coinciden";
     }
@@ -66,17 +66,17 @@ export class LoginComponent {
 
   ngOnInit() {
     let token = localStorage.getItem('token');
-    if(token != null && token != undefined && token != 'null'){
+    if (token != null && token != undefined && token != 'null') {
       this.http.post(env.baseURL + '/user/validate', {
         token: token
       }).subscribe((data: { [key: string]: any }) => {
-        if(data['valid'] == true){
-            this.router.navigate(['']);
+        if (data['valid'] == true) {
+          this.router.navigate(['']);
         }
       });
     }
-
-  //Chanchada abajo no mirar mucho
+    console.log(token);
+    //Chanchada abajo no mirar mucho
     document.body.style.backgroundColor = '#3f3f3f';
   }
 

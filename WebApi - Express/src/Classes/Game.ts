@@ -1,5 +1,6 @@
 import { Activity } from "./Activity";
 import { Player } from "./Player";
+import { Utils } from "./Utils";
 
 export class Game {
   id: string;
@@ -12,37 +13,37 @@ export class Game {
   url: string = "";
 
   activities: Activity[] = [];
-  currentActivity: Activity | undefined;
-
+  activityPlayer : any[] = [];
+  answers: any[] = [];
   public started: boolean = false;
 
   constructor(name: string, id: string, ws: any) {
     this.activities = [
-        new Activity(1, "Nestor", "Marcas de autos"),
-        new Activity(2, "Martin", "Nombres de bizcochos"),
-        new Activity(3, "Linda", "Platillos típicos de Argentina"),
-        new Activity(4, "Juan Pablo", "Bandas de rock"),
-        new Activity(5, "Maria", "Juegos de mesa populares"),
-        new Activity(6, "Ravi", "Películas de ciencia ficción"),
-        new Activity(7, "Ming", "Culturas y sus festivales"),
-        new Activity(8, "Emma", "Canciones de amor famosas"),
-        new Activity(9, "Diego", "Bebidas alcohólicas icónicas"),
-        new Activity(10, "Sakura", "Literatura clásica mundial"),
-        new Activity(11, "Carlos", "Bailarines de salsa famosos"),
-        new Activity(12, "Jorge", "Juegos Olímpicos modernos"),
-        new Activity(13, "Sophia", "Actores de cine de Hollywood"),
-        new Activity(14, "Amina", "Países que han ganado la Copa del Mundo de fútbol"),
-        new Activity(15, "Eduardo", "Pintores famosos"),
-        new Activity(16, "Hiroshi", "Platillos típicos de Japón"),
-        new Activity(17, "Olivia", "Bandas de rock de los 80"),
-        new Activity(18, "Mikhail", "Videojuegos más vendidos de todos los tiempos"),
-        new Activity(19, "Carmen", "Premios Nobel de Literatura"),
-        new Activity(20, "Ali", "Científicos influyentes"),
-        new Activity(21, "Katya", "Culturas precolombinas de América"),
-        new Activity(22, "Luigi", "Películas de terror clásicas"),
-        new Activity(23, "Tatiana", "Bebidas tradicionales de Rusia"),
-        new Activity(24, "David", "Astronautas famosos"),
-        new Activity(25, "Isabella", "Juegos de cartas populares")
+      new Activity(1, "Nestor", "Marcas de autos"),
+      new Activity(2, "Martin", "Nombres de bizcochos"),
+      new Activity(3, "Linda", "Platillos típicos de Argentina"),
+      new Activity(4, "Juan Pablo", "Bandas de rock"),
+      new Activity(5, "Maria", "Juegos de mesa populares"),
+      new Activity(6, "Ravi", "Películas de ciencia ficción"),
+      new Activity(7, "Ming", "Culturas y sus festivales"),
+      new Activity(8, "Emma", "Canciones de amor famosas"),
+      new Activity(9, "Diego", "Bebidas alcohólicas icónicas"),
+      new Activity(10, "Sakura", "Literatura clásica mundial"),
+      new Activity(11, "Carlos", "Bailarines de salsa famosos"),
+      new Activity(12, "Jorge", "Juegos Olímpicos modernos"),
+      new Activity(13, "Sophia", "Actores de cine de Hollywood"),
+      new Activity(14, "Amina", "Países que han ganado la Copa del Mundo de fútbol"),
+      new Activity(15, "Eduardo", "Pintores famosos"),
+      new Activity(16, "Hiroshi", "Platillos típicos de Japón"),
+      new Activity(17, "Olivia", "Bandas de rock de los 80"),
+      new Activity(18, "Mikhail", "Videojuegos más vendidos de todos los tiempos"),
+      new Activity(19, "Carmen", "Premios Nobel de Literatura"),
+      new Activity(20, "Ali", "Científicos influyentes"),
+      new Activity(21, "Katya", "Culturas precolombinas de América"),
+      new Activity(22, "Luigi", "Películas de terror clásicas"),
+      new Activity(23, "Tatiana", "Bebidas tradicionales de Rusia"),
+      new Activity(24, "David", "Astronautas famosos"),
+      new Activity(25, "Isabella", "Juegos de cartas populares")
     ];
 
     this.id = id;
@@ -55,6 +56,11 @@ export class Game {
 
     ws.of(this.url).on("connection", (socket: any) => {
       ws.of(this.url).emit("playerList", this.players);
+      if (this.started) {
+        socket.emit("activityPlayer", { 'activityPlayer': this.activityPlayer });
+        socket.emit("stage", { "stage": this.stage });
+        socket.emit("timer", { 'timer': this.timer });
+      }
 
       //--------------------------------------------------------------------------------
 
@@ -71,56 +77,52 @@ export class Game {
           this.started = true;
           ws.of(this.url).emit("startGame");
 
+          this.getActivities();
+          
           setTimeout(() => {
-            this.currentActivity =
-              this.activities[
-                Math.floor(Math.random() * this.activities.length)
-              ];
-            this.activities = this.activities.filter((value) => {
-              return value !== this.currentActivity;
-            });
+            this.ws.of(this.url).emit("activityPlayer", this.activityPlayer);
             this.startAnswerTimer();
             return;
           }, 5000);
         }
       });
-
-      socket.on("currentActivity", (data: { [key: string]: any }) => {
-        if (this.currentActivity != undefined)
-          ws.of(this.url).emit("currentActivity", this.currentActivity);
+      socket.on("submitAnswer", (data: { [key: string]: any }) => {
+        console.log(data['userName']);
+        this.answers.push(data['userName']);
+        this.answers.push(data['answer']);
+        this.answers.forEach(element => {
+          console.log(element);
+        });
       });
     });
   }
 
-  public startAnswerTimer() {
-    console.log(this.activities.length);
-    console.log(this.currentActivity);
+  stage: number = 0;
+  timer: number = 30;
 
-    if (this.activities.length == 0) {
-      console.log("SE ACABO");
+  public startAnswerTimer() {
+    if (this.stage == 2) {
+      console.log("TERMINO");
+      this.ws.of(this.url).emit("stage", { "stage": this.stage })
+      return;
     } else {
-      let timer = 30;
-      this.ws.of(this.url).emit("currentActivity", this.currentActivity);
-      setTimeout(() => {
-        //ESTE PRIMER TIMEOUT ES PARA LA ANIMACION EN EL HTML
-        let x = setInterval(() => {
-            if (timer == 0) {
-              this.currentActivity = this.activities[Math.floor(Math.random() * this.activities.length)];
-              this.activities = this.activities.filter((value) => {
-                return value !== this.currentActivity;
-              });
-              this.ws.of(this.url).emit("timer",{'timer' : "¡SE ACABO!"});
-              setTimeout(() => {
-                this.startAnswerTimer();
-              }, 2000);
-              clearInterval(x);
-              return;
-            }else{
-                this.ws.of(this.url).emit("timer",{'timer' : timer});
-                timer--;
-            }
-          }, 1000);
-      }, 3000);
+      this.ws.of(this.url).emit("newStage");
+      this.ws.of(this.url).emit("stage", { "stage": this.stage });
+      let x = setInterval(() => {
+        if (this.timer > 0) {
+          this.timer--;
+          this.ws.of(this.url).emit("timer", { 'timer': this.timer });
+        } else {
+          this.ws.of(this.url).emit("timer", { 'timer': "¡Se acabó el tiempo!" });
+          clearInterval(x);
+          setTimeout(() => {
+            this.stage++;
+            this.timer = 30;
+            this.startAnswerTimer();
+          }, 2000);
+        }
+
+      }, 1000);
     }
   }
 
@@ -158,7 +160,20 @@ export class Game {
         .emit("chatMessage", { server: true, message: message });
     }, 1000);
   }
-}
+  private getActivities() {
+    Utils.shuffle(this.players);
+    Utils.shuffle(this.activities);
+  
+    const maxActivities = Math.min(this.players.length, this.activities.length);
+  
+    for (let i = 0; i < maxActivities; i++) {
+      let j = (i + 1) % maxActivities;
+      this.activityPlayer.push(this.activities[i])
+      this.activityPlayer.push(this.players[i])
+      this.activityPlayer.push(this.players[j])
+      }
+    }
+  }
 
 export enum Status {
   WAITING,
