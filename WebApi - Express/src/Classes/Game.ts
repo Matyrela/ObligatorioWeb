@@ -5,7 +5,7 @@ import { Utils } from "./Utils";
 export class Game {
   id: string;
   name: string;
-  players: Player[];
+  players: string[];
   status: Status;
   adminPlayer!: Player;
 
@@ -48,7 +48,7 @@ export class Game {
 
     this.id = id;
     this.name = name;
-    this.players = new Array<Player>();
+    this.players = new Array<string>();
     this.status = Status.WAITING;
     this.ws = ws;
 
@@ -128,20 +128,20 @@ export class Game {
 
   public addPlayer(player: Player) {
     if (this.players.length == 0) this.adminPlayer = player;
-    this.players.push(player);
+    this.players.push(player.name);
   }
 
   public removePlayer(player: Player) {
     let adminWasChanged = false;
 
     this.players = this.players.filter((value) => {
-      return value !== player;
+      return value !== player.name;
     });
 
     if (player === this.adminPlayer) {
       if (this.players.length > 0) {
         adminWasChanged = true;
-        this.adminPlayer =
+        this.adminPlayer.name =
           this.players[Math.floor(Math.random() * this.players.length)];
       }
     }

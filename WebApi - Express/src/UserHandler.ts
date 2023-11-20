@@ -19,7 +19,7 @@ export class UserHandler {
         return UserHandler.instance;
     }
 
-    private async getUserByToken(token: string) {
+    public async getUserByToken(token: string) {
         return await UserModel.find({ userToken: token }).exec();
     }
 
@@ -92,11 +92,6 @@ export class UserHandler {
                 }
             }
             res.send({ 'token': 'null', 'login': false }).status(409);
-        });
-
-        app.post('/api/user/pruebaget', async (req, res) => {
-            console.log("asdasd");
-            res.json(await UserModel.find());
         });
 
         app.post('/api/user/register', async (req, res) => {
