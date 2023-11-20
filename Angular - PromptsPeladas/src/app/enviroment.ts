@@ -4,5 +4,4 @@ export const env = {
     baseURL: 'http://10.13.225.82:7777/api',
     WebSocket: "ws://10.13.225.82:7777/games/ws/"
 
-
 }

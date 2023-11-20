@@ -35,6 +35,10 @@
   <div class="connection-dot" [ngClass]="{'green-dot': isServerConnected, 'red-dot': !isServerConnected}"></div>
 </div>
 
-<div>
-  <button class="btn btn-danger" (click)="this.router.navigate(['activity']);">Actividades</button>
+<!-- Agregar boton de Crear Propuestas-->
+
+<div class="col-sm-6 mx-auto">
+  <button class="btn btn-danger" (click)="this.router.navigate(['activity']);">Crear Actividades</button>
+  <button class="btn btn-danger" (click)="this.router.navigate(['proposal']);">Crear Propuestas</button>
+
 </div>

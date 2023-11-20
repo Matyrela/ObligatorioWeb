@@ -38,7 +38,7 @@ export class CreateActivityComponent {
   }
 
   returnToMenu() {
-    throw new Error('Method not implemented.'); // Redirigir a la página principal
+    this.router.navigate(['menu']);
   }
 
   updateActivities() {

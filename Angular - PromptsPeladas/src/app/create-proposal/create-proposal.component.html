@@ -1,0 +1,70 @@
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title"> Nueva Propuesta </h4>
+                    <form>
+                        <div class="form-group">
+                            <label for="description">Nombre de la Propuesta</label>
+                            <input type="text" class="form-control" id="description" [(ngModel)]="description"
+                                name="description" placeholder="Ingrese el nombre de la Propuesta">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-6 offset-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Lista de Actividades</h5>
+                    <ul class="list-group">
+                        <li class="list-group-item" *ngFor="let activity of activities">
+                            <label class="form-check-label" for="flexCheckDefault">
+                            <input #activityCheckbox class="form-check-input" type="checkbox" value="" id="{{activity.id}}">                                  <span>{{activity.description}}
+                                    <span style="color: gray; opacity: 0.8 "> {{activity.playerName}}</span>
+                                </span>
+                            </label>
+                            
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-6 offset-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Lista de Propuestas</h5>
+                    <ul class="list-group">
+                        <li class="list-group-item" *ngFor="let proposal of proposals">
+                            <button type="button" class="close" aria-label="Close"
+                                (click)="removeProposal(proposal.id)">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <span>  {{proposal.description}} </span>
+                            <span style="color: gray; opacity: 0.8 "> {{proposal.playerName}}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-6 offset-md-3">
+            <button type="button" class="btn btn-secondary" (click)="returnToMenu()">Regresar</button>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6 offset-md-3">
+        <button type="submit" class="btn btn-primary" (click)="createProposal()">Crear Propuesta</button>
+    </div>
+</div>
