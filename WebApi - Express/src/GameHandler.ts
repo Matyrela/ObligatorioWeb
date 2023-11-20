@@ -12,7 +12,7 @@ export class GameHandler {
             let token: string = req.body.token as string;
             let user = await UserHandler.getInstance().getUserByToken(token);
             if (user != null) {
-                let player: null | Player = new Player(user.userName as string);
+                let player: null | Player = new Player(user[0].userName as string);
                 let gameCreated;
                 if (roomGame != null && roomGame != "" && roomGame != undefined && roomGame.length > 0 && player != null) {
                     gameCreated = GameManager.getInstance().createGame(roomGame, player, ws);
@@ -35,9 +35,18 @@ export class GameHandler {
                 let game = gameManager.getGame(code);
                 if (game != undefined && game != null) {
                     let user = await UserHandler.getInstance().getUserByToken(token);
-                    let player: null | Player = new Player(user.userName as string);
+                    let player: null | Player = new Player(user[0].userName as string);
+                    /*
+                    TypeError: Cannot read properties of undefined (reading 'userName')
+                        at GameHandler.<anonymous> (/home/matias/Cursos/WEB/ObligatorioWeb/WebApi - Express/src/GameHandler.ts:38:68)
+                        at Generator.next (<anonymous>)
+                        at fulfilled (/home/matias/Cursos/WEB/ObligatorioWeb/WebApi - Express/src/GameHandler.ts:5:58)
+                        at processTicksAndRejections (node:internal/process/task_queues:95:5)
+                    [ERROR] 10:59:11 TypeError: Cannot read properties of undefined (reading 'userName')
+                     */
+                    throw new Error("Arreglame Laion, GameHandler.ts :38,68");
                     if (player != null) {
-                        if (!game.started || game.players.includes(player)) {
+                        if (!game.started || game.players.includes(player.name)) {
                             gameManager.joinGame(player, game);
                             res.send({ 'joined': true });
                             return;
@@ -51,15 +60,12 @@ export class GameHandler {
         app.post('/api/game/get', async (req, res) => {
             let token = req.body.token as string;
             let user = await UserHandler.getInstance().getUserByToken(token);
-            let player: null | Player = new Player(user.userName as string);
-            console.log(player);
+            let player: null | Player = new Player(user[0].userName as string);
             if (player != null) {
                 let gameManager = GameManager.getInstance();
-                let code: string = gameManager.checkPlayerInGame(player);
-                console.log(code);
+                let code: string | undefined = gameManager.checkPlayerInGame(player);
                 if (code != undefined && code != null) {
                     let game = gameManager.getGame(code);
-                    console.log("la tenes adentro");
                     res.send({
                         'code': code,
                         'roomName': game?.name,
@@ -79,7 +85,7 @@ export class GameHandler {
             if (player != null && player != undefined) {
                 let code = gm.checkPlayerInGame(player);
                 if (code != 'INVALID') {
-                    let game = gm.getGame(code);
+                    let game = gm.getGame(code as string);
                     if (game != undefined && game != null) {
                         res.send({ 'code': code, 'started': game.started });
                         return;
@@ -95,13 +101,13 @@ export class GameHandler {
             if (player != null && player != undefined) {
                 let code = gm.checkPlayerInGame(player);
                 if (code != 'INVALID') {
-                    gm.removePlayer(player, code);
-                    res.send({ "removed": true })
+                    gm.removePlayer(player, code as string);
+                    res.send({ "removed": true });
                     return;
                 }
             }
 
-            res.send({ "removed": false })
+            res.send({ "removed": false });
         });
 
     }

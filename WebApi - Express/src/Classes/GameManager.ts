@@ -5,7 +5,7 @@ export class GameManager {
     
     static instance: GameManager;
     game: Map<string, Game>;
-    players: Map<Player, string> = new Map<Player, string>();
+    players: Map<string, string> = new Map<string, string>();
 
     constructor() { 
         this.game = new Map<string, Game>();
@@ -23,17 +23,19 @@ export class GameManager {
     }
 
     addPlayer(player: Player) : boolean {
-        this.players.set(player, "INVALID");
+        this.players.set(player.name, "INVALID");
         return true;
     }
-    getPlayers(): Array<Player> {
+
+    getPlayers(): Array<string> {
         let playersdb = UserModel.find().exec();
         return Array.from(this.players.keys());
     }
+
     public isPlayerInPlayers(name : string) : boolean{
         let check = false;
         Array.from(this.players.keys()).forEach(element => {
-            if(element.name == name){
+            if(element == name){
                 check = true;
             }            
         });
@@ -44,25 +46,27 @@ export class GameManager {
         }
     }
 
+    joinGame(player: Player, game: Game) {
+        if (!game.players.includes(player.name)) {
+            game.addPlayer(player);
+        }
+        this.players.set(player.name, game.id);
+    }
+    
     createGame(roomName: string, player: Player, ws: any): Game {
         let id = Math.random().toString(32).substring(4, 8).toUpperCase();
-
+    
         let newGame: Game = new Game(roomName, id, ws);
-
+    
         this.game.set(id, newGame);
         this.joinGame(player, newGame);
         return newGame;
     }
-
-    joinGame(player : Player, game : Game){
-        if(!game.players.includes(player)){
-            game.addPlayer(player);
-        }
-        this.players.set(player, game.id);
-    }
-
-    checkPlayerInGame(player: Player) : string {
-        let code : string = this.players.get(player) as string;
+    
+    
+    checkPlayerInGame(player: Player): string | undefined {
+        console.log(this.players);
+        let code: string | undefined = this.players.get(player.name);
         return code;
     }
     
@@ -70,7 +74,7 @@ export class GameManager {
         let game = this.game.get(code);
         if (game != undefined) {
             game.removePlayer(player);
-            this.players.set(player, "INVALID")
+            this.players.set(player.name, "INVALID")
             if (game.players.length == 0) {
                 this.game.delete(game.id);
             }
