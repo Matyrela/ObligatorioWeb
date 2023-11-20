@@ -13,13 +13,16 @@ import { type } from 'os';
   styleUrls: ['./game.component.css']
 })
 export class GameComponent {
+
   ws!: any;
 
   code: string = "";
-  activities: Activity[] = [];
-  stage:number = 0;
+  myActivities: Activity[] = [];
+  allActivities: Activity[] = [];
+  stage: number = 0;
+  index: number = 0;
   answer: string = "";
-  votation : boolean = false;
+  votation: boolean = false;
 
   anwserSubmitted: boolean = false;
 
@@ -35,6 +38,8 @@ export class GameComponent {
       if (data['code'] != undefined && data['code'] != null && data['code'] != 'INVALID') {
         this.code = data['code'];
         this.connWebSocket();
+      } else {
+        this.router.navigate(['/menu']);
       }
     });
   }
@@ -44,6 +49,9 @@ export class GameComponent {
     this.ws.emit('submitAnswer', { 'userName': localStorage.getItem("userName"), 'answer': this.answer });
     this.answer = "";
   }
+  scorePoint(score: number) {
+    this.ws.emit('scorePoint', {'activity' : this.myActivities[this.index], 'score': score }); 
+    }
 
   connWebSocket() {
     this.ws = io(env.WebSocket + this.code, {
@@ -52,13 +60,17 @@ export class GameComponent {
 
     this.ws.on('activityPlayer', (data: { [key: string]: any }) => {
       let content = data['activityPlayer'];
+      console.log(content);
       let i = 0;
-      while (i < content.length - 1) {
-        if (content[i+1].name == localStorage.getItem("userName") || content[i + 2].name == localStorage.getItem("userName")){
-          this.activities.push(content[i]);
+      if (content != undefined && content != null) {
+        while (i < content.length - 1) {
+          if (content[i + 1] == localStorage.getItem("userName") || content[i + 2] == localStorage.getItem("userName")) {
+            this.myActivities.push(content[i]);
+          }
+          i += 3;
         }
-        i += 3;
-    }});
+      }
+    });
 
     this.ws.on('newStage', (data: { [key: string]: any }) => {
       this.show = true;
@@ -69,19 +81,16 @@ export class GameComponent {
     });
 
     this.ws.on('stage', (data: { [key: string]: any }) => {
-      console.log("STAGE:");
-      console.log(data['stage']);
-      console.log("---------------------");
       this.stage = data['stage'];
-      console.log(this.stage);
-      if(this.stage == 2){
+      this.index = (data['stage']-1) % this.myActivities.length;
+      if (this.stage == 2) {
         console.log("VOTACION");
         this.votation = true;
       }
     });
 
     this.ws.on("timer", (data: { [key: string]: any }) => {
-      if (data['timer'] == "¡Se acabó el tiempo!") {
+      if (data['timer'] == "¡Se acabó el tiempo!" && this.stage < 2) {
         this.submitAnswer();
       }
 

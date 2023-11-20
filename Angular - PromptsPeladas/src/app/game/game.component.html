@@ -2,15 +2,15 @@
     <div class="cortinaNumber">
         <div class="card text-center prompt">
             <div class="card-header">
-              <h1 class="promptText">❝ {{ activities[stage].description }} ❞</h1>
+              <h1 class="promptText" id="prompt"> ❝ {{ myActivities[index]?.description }} ❞</h1>
               <hr class="promtsHr">
-              <p class="promptAuthor">- {{ activities[stage].player_id }}</p>
+              <p class="promptAuthor"> - {{ myActivities[index]?.player_id }}</p>
             </div>
         </div>
     </div>
 </div>
 
-<div class="container promptHolder">
+<div class="container promptHolder" *ngIf="votation == false">
     <div class="row">
       <div class="col-lg-8 mx-auto">
         <h1 class="text-center promptTitle">¡Responde con algo chistoso!</h1>
@@ -19,27 +19,46 @@
         </div>
         <div class="card text-center prompt">
           <div class="card-header">
-            <h1 class="promptText">❝ {{ activities[stage].description }} ❞</h1>
+            <h1 class="promptText">❝ {{ myActivities[index]?.description }} ❞</h1>
             <hr class="promtsHr">
-            <p class="promptAuthor">- {{ activities[stage].player_id }}</p>
+            <p class="promptAuthor">- {{ myActivities[index]?.player_id }}</p>
           </div>
         </div>
         <br>
         <hr>
         <br>
-        <div *ngIf="votation == false">
+        <div>
           <textarea class="form-control" rows="2" [(ngModel)]="answer" placeholder="¡Responde aqui!"></textarea>
           <div class="text-center">
               <br>
               <button type="button" class="btn btn-primary btn-lg btn-block btn-prompt" (click)="submitAnswer()">Submit</button>
           </div>
         </div>
-        <div class="container votationHolder" *ngIf="votation == true" style="display: flex;">
-          <button>buenardo</button>
-          <button>una pija</button>
+      </div>
+    </div>
+  </div>
+  <div class="container promptHolder" *ngIf="votation == true">
+    <div class="row">
+      <div class="col-lg-8 mx-auto">
+        <h1 class="text-center promptTitle">¡Vota la que te parezca mejor!</h1>
+        <div class="timerDiv">
+            <h1 class="timer" id='timer' >{{ timer }}</h1>
+        </div>
+        <div class="card text-center prompt">
+          <div class="card-header">
+            <h1 class="promptText">❝ {{ allActivities[index]?.description }} ❞</h1>
+            <hr class="promtsHr">
+            <p class="promptAuthor">- {{ allActivities[index]?.player_id }}</p>
+          </div>
+        </div>
+        <br>
+        <hr>
+        <br>
+        <div class="container votationHolder" style="display: flex;">
+          <button type="button" (click)="scorePoint(1)">buenardo</button>
+          <button type="button" (click)="scorePoint(-1)">una pija</button>
           <button>para que existo</button>
         </div>
-        
       </div>
     </div>
   </div>

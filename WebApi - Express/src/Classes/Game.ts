@@ -57,6 +57,7 @@ export class Game {
     ws.of(this.url).on("connection", (socket: any) => {
       ws.of(this.url).emit("playerList", this.players);
       if (this.started) {
+        console.log(this.activityPlayer);
         socket.emit("activityPlayer", { 'activityPlayer': this.activityPlayer });
         socket.emit("stage", { "stage": this.stage });
         socket.emit("timer", { 'timer': this.timer });
@@ -101,8 +102,7 @@ export class Game {
   timer: number = 30;
 
   public startAnswerTimer() {
-    if (this.stage == 2) {
-      console.log("TERMINO");
+    if (this.stage == 4) {
       this.ws.of(this.url).emit("stage", { "stage": this.stage })
       return;
     } else {
@@ -122,10 +122,9 @@ export class Game {
           }, 2000);
         }
 
-      }, 1000);
+        }, 1000);
     }
   }
-
   public addPlayer(player: Player) {
     if (this.players.length == 0) this.adminPlayer = player;
     this.players.push(player.name);
