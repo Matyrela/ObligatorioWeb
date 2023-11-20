@@ -20,7 +20,7 @@ export class UserHandler {
     }
 
     public async getUserByToken(token: string) {
-        return (await UserModel.find({ userToken: token }).exec())[0];
+        return await UserModel.find({ userToken: token }).exec();
     }
 
     private async getUserByUserName(name: string) {
@@ -54,8 +54,8 @@ export class UserHandler {
         });
         if (name != '') {
             GameManager.getInstance().getPlayers().forEach(element => {
-                if (element.name == name)
-                    player = element;
+                if (element == name)
+                    player = new Player(element);
             });
         }
         return player;
@@ -99,11 +99,6 @@ export class UserHandler {
                 }
             }
             res.send({ 'token': 'null', 'login': false }).status(409);
-        });
-
-        app.post('/api/user/pruebaget', async (req, res) => {
-            console.log("asdasd");
-            res.json(await UserModel.find());
         });
 
         app.post('/api/user/register', async (req, res) => {

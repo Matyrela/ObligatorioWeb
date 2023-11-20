@@ -44,6 +44,10 @@ export class RoomComponent {
       this.conStatus = data['status'];
       this.admin = data['admin'].name;
 
+      if(this.code == "" || this.code == "INVALID"){
+        this.router.navigate(['menu']);
+      }
+
       this.connWebSocket();
 
       let qrCanvas = document.getElementById('qrCode')
@@ -51,6 +55,7 @@ export class RoomComponent {
         if (error) console.error(error)
       })
     });
+
 
     this.documentVisibilityService.getVisibilityChangeObservable()
     .subscribe(isVisible => {
