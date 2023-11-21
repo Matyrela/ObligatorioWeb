@@ -1,5 +1,5 @@
 <div class="container">
-    <div class="row">
+    <div class="row mt-4"> 
         <div class="col-md-6 offset-md-3">
             <div class="card">
                 <div class="card-body">
@@ -24,15 +24,23 @@
                     <ul class="list-group">
                         <li class="list-group-item" *ngFor="let activity of activities">
                             <label class="form-check-label" for="flexCheckDefault">
-                            <input #activityCheckbox class="form-check-input" type="checkbox" value="" id="{{activity.player_id}}">                                  <span>{{activity.description}}
-                                    <span style="color: gray; opacity: 0.8 "> {{activity.player_id}}</span>
+                                <input #activityCheckbox class="form-check-input" type="checkbox" value=""
+                                    id="{{activity.player_id}}">
+                                <span>{{activity.description}}
+                                    <span style="color: gray; opacity: 0.8 "></span>
                                 </span>
                             </label>
-                            
+
                         </li>
                     </ul>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-6 offset-md-3 text-center">
+            <button type="submit" class="btn btn-primary" (click)="createProposal()">Crear Propuesta</button>
         </div>
     </div>
 
@@ -47,7 +55,7 @@
                                 (click)="removeProposal(proposal._id)">
                                 <span aria-hidden="true">&times;</span>
                             </button>
-                            <span>  {{proposal.description}} </span>
+                            <span> {{proposal.description}} </span>
                             <span style="color: gray; opacity: 0.8 "> {{proposal.player_id}}</span>
                         </li>
                     </ul>
@@ -61,10 +69,6 @@
             <button type="button" class="btn btn-secondary" (click)="returnToMenu()">Regresar</button>
         </div>
     </div>
+    <div class="row mt-4"></div>
 </div>
 
-<div class="row mt-4">
-    <div class="col-md-6 offset-md-3">
-        <button type="submit" class="btn btn-primary" (click)="createProposal()">Crear Propuesta</button>
-    </div>
-</div>

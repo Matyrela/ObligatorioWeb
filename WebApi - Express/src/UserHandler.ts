@@ -54,6 +54,14 @@ export class UserHandler {
         return player;
     }
 
+    async getPlayerByID(id: string): Promise<string> {
+        let userDB = await UserModel.findById(id).exec();
+        if (userDB != null && userDB.userName != undefined) {
+            return userDB?.userName;
+        }
+        return "";
+    }
+
     constructor(app: Express) {
         UserHandler.instance = this;
 

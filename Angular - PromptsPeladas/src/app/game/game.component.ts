@@ -78,6 +78,7 @@ export class GameComponent {
         console.log("VOTACION");
         this.votation = true;
       }
+      console.log("actividades: ",this.activities);
     });
 
     this.ws.on("timer", (data: { [key: string]: any }) => {

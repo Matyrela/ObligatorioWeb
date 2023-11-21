@@ -27,6 +27,9 @@ export class CreateProposalComponent {
   ngOnInit(): void {
     this.updateProposals();
     this.updateActivities();
+
+    document.body.style.background = "#6cc7d9";
+    document.body.style.background = "linear-gradient(to left, #6cc7d9,  #f9a8d4)";
   }
 
   // Creo una propuesta
@@ -72,5 +75,9 @@ export class CreateProposalComponent {
 
   returnToMenu() {
     this.router.navigate(['menu']);
+  }
+
+  ngOnDestroy(): void {
+    document.body.style.background = "white";
   }
 }
