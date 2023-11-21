@@ -48,7 +48,7 @@ export class UserHandler {
     async getPlayer(token: string): Promise<Player | null> {
         let player: Player | null = null;
         let userDB = await this.getUserByToken(token);
-        if (userDB != null && userDB[0].userName != undefined) {
+        if (userDB != null && userDB[0] != undefined && userDB[0].userName != undefined) {
             player = new Player(userDB[0]?.userName);
         }
         return player;
