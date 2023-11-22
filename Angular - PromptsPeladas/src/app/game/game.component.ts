@@ -129,8 +129,9 @@ export class GameComponent {
         console.log("votation" + this.votation);
         this.index = 0;
       }
-      if (this.stage > 2 && this.stage < 4)
+      if (this.stage > 2)
         this.index += 6;
+
     });
 
     this.ws.on("timer", (data: { [key: string]: any }) => {

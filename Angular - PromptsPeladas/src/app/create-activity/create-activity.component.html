@@ -1,14 +1,14 @@
 <div class="container">
     <div class="row">
         <div class="col-md-6 offset-md-3">
-            <div class="card">
+            <div class="card mt-4">
                 <div class="card-body">
                     <h5 class="card-title">Nueva Actividad</h5>
                     <form>
-                        <div class="form-group">
+                        <div class="form-group mb-3">
                             <label for="description">Descripción de la Actividad</label>
-                            <input type="text" class="form-control" id="description" [(ngModel)]="description" name="description"
-                                placeholder="Ingrese la descripción de la actividad">
+                            <input type="text" class="form-control" id="description" [(ngModel)]="description"
+                                name="description" placeholder="Ingrese la descripción de la actividad">
                         </div>
                         <button type="submit" class="btn btn-primary" (click)="addActivity()">Agregar</button>
                     </form>
@@ -21,25 +21,28 @@
         <div class="col-md-6 offset-md-3">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Lista de Actividades</h5>
+                    <h5 class="card-title mb-3">Lista de Actividades</h5>
                     <ul class="list-group">
-                        <li class="list-group-item" *ngFor="let activity of activities">
-                            <button type="button" class="close" aria-label="Close" (click)="removeActivity(activity._id)">
+                        <li class="list-group-item mb-2" *ngFor="let activity of activities">
+                            <button type="button" class="close" aria-label="Close"
+                                (click)="removeActivity(activity._id)">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                             <span>{{activity.description}}
-                                <span style="color: gray; opacity: 0.8 "> {{activity.player_id}}</span>
+                                <!--<span style="color: gray; opacity: 0.8 "></span>-->
                             </span>
                         </li>
                     </ul>
                 </div>
             </div>
         </div>
-    </div> 
+    </div>
 
     <div class="row mt-4">
         <div class="col-md-6 offset-md-3">
-            <button type="button" class="btn btn-secondary" (click)="returnToMenu()">Regresar</button>
+            <div class="text-center">
+                <button type="button" class="btn btn-secondary" (click)="returnToMenu()">Regresar</button>
+            </div>
         </div>
     </div>
 </div>

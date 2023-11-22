@@ -18,7 +18,11 @@ export class CreateActivityComponent {
 
   ngOnInit(): void {
     this.updateActivities();
+
+    document.body.style.background = "#f9a8d4";
+    document.body.style.background = "linear-gradient(to left, #f9a8d4, #6cc7d9)";
   }
+
 
   removeActivity(id: string) {
     console.log(id);
@@ -48,5 +52,14 @@ export class CreateActivityComponent {
       });
   }
 
+  getActivityPlayerNameByID(id: string) {
+    this.http.post(
+      env.baseURL + '/activity/getPlayerByID', { playerID: id }).subscribe((data: { [key: string]: any }) => {
+        console.log(data);
+      });
+  }
 
+  ngOnDestroy(): void {
+    document.body.style.background = "white";
+  }
 }
