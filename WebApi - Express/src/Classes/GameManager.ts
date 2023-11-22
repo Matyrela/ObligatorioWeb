@@ -65,7 +65,6 @@ export class GameManager {
     
     
     checkPlayerInGame(player: Player): string | undefined {
-        console.log(this.players);
         let code: string | undefined = this.players.get(player.name);
         return code;
     }

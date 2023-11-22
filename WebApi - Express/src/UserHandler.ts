@@ -69,7 +69,6 @@ export class UserHandler {
                 const dbUser = await UserModel.findOne({ userName: userName }).exec();
                 if (dbUser != null) {
                     if (hashedPass === dbUser.userPassword && dbUser.userName == userName) {
-                        console.log("LOGIN OK");
                         let token = await this.getUserToken(userName);
                         if (token == undefined || !this.verificarTokenExpirado(token)) {
                             token = jwt.sign({ userName }, 'pelela', { expiresIn: '24h' });

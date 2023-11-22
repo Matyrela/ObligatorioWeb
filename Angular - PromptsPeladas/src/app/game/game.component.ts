@@ -6,6 +6,7 @@ import { io } from "socket.io-client";
 import { Activity } from '../../app/clases/activity';
 import { Player } from '../clases/Player';
 import { type } from 'os';
+import { log } from 'console';
 
 @Component({
   selector: 'app-game',
@@ -18,12 +19,13 @@ export class GameComponent {
 
   code: string = "";
   myActivities: Activity[] = [];
-  allActivities: Activity[] = [];
+  answerActivities: any[] = [];
   stage: number = 0;
-  index: number = 0;
+  index: number = -3;
   answer: string = "";
   votation: boolean = false;
-
+  winner: string ="";
+  winnerCheck : boolean = false;
   anwserSubmitted: boolean = false;
 
   timer: string = "--";
@@ -46,11 +48,11 @@ export class GameComponent {
 
   submitAnswer() {
     this.anwserSubmitted = true;
-    this.ws.emit('submitAnswer', { 'userName': localStorage.getItem("userName"), 'answer': this.answer });
+    this.ws.emit('submitAnswer', {'activities' : this.myActivities[this.stage] , 'userName': localStorage.getItem("userName"), 'answer': this.answer });
     this.answer = "";
   }
-  scorePoint(score: number) {
-    this.ws.emit('scorePoint', {'activity' : this.myActivities[this.index], 'score': score }); 
+  scorePoint(userName: string) {
+    this.ws.emit('scorePoint', {'userName' : userName}); 
     }
 
   connWebSocket() {
@@ -59,8 +61,7 @@ export class GameComponent {
     });
 
     this.ws.on('activityPlayer', (data: { [key: string]: any }) => {
-      let content = data['activityPlayer'];
-      console.log(content);
+      let content = data['activityPlayer'] as any[];
       let i = 0;
       if (content != undefined && content != null) {
         while (i < content.length - 1) {
@@ -71,7 +72,47 @@ export class GameComponent {
         }
       }
     });
-
+    this.ws.on('answerActivities', (data: { [key: string]: any }) => {
+      let content = data['answerActivities'] as any[];
+      let orderContent : any[] = [];
+      let i = 0;
+      while (content.length != orderContent.length) { 
+        if (!orderContent.includes(content[i])) {
+          orderContent.push(content[i]);
+          orderContent.push(content[i + 1]);
+          orderContent.push(content[i + 2]);
+          let j = i+3;
+          while (j < content.length - 1) {
+            if (content[j]?.id === content[i]?.id && content[i+1] === content[j+1] && content[j+2] !== '') {
+              orderContent.push(content[j]);
+              orderContent.push(content[j + 1]);
+              orderContent.push(content[j + 2]);
+              break;
+            }
+            j += 3;
+          }
+        }
+        
+        i += 3;
+      }
+      i = 0;
+      let finalList : any[] = []; //tengo que hacer esto porque ts es una basura y no me eliminaba los strings vacios, que por algun motivo eran muchos
+      while (i < orderContent.length) {
+        if (orderContent[i + 2] === "" || orderContent[i+1] === "" || orderContent[i] === "") {
+          orderContent.splice(i, 3);
+        }else{
+          if (orderContent[i+1] !== localStorage.getItem("userName") && orderContent[i+2] !== localStorage.getItem("userName")){
+            finalList.push(orderContent[i]);
+            finalList.push(orderContent[i+1]);
+            finalList.push(orderContent[i+2]);
+          } //poner este if para que el jugador no pueda votar sus propias respuestas
+          
+        }
+        i += 3;
+      }
+      this.answerActivities = finalList;
+      console.log(this.answerActivities);
+    });
     this.ws.on('newStage', (data: { [key: string]: any }) => {
       this.show = true;
       this.anwserSubmitted = false;
@@ -81,12 +122,15 @@ export class GameComponent {
     });
 
     this.ws.on('stage', (data: { [key: string]: any }) => {
-      this.stage = data['stage'];
-      this.index = (data['stage']-1) % this.myActivities.length;
+      console.log("stage" + data['stage'])
+      this.stage = data['stage'] as number;
       if (this.stage == 2) {
-        console.log("VOTACION");
         this.votation = true;
+        console.log("votation" + this.votation);
+        this.index = 0;
       }
+      if (this.stage > 2 && this.stage < 4)
+        this.index += 6;
     });
 
     this.ws.on("timer", (data: { [key: string]: any }) => {
@@ -96,5 +140,10 @@ export class GameComponent {
 
       this.timer = data['timer'];
     });
+    this.ws.on("winner", (data: { [key: string]: any})=>{
+      this.winner = data['playerWinner'];
+      this.votation = false;
+      this.winnerCheck = true;
+    })
   }
 }
