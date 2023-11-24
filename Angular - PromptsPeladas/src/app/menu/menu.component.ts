@@ -4,7 +4,6 @@ import { env } from "../enviroment"
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import * as Toastify from 'toastify-js';
-import { scan } from 'rxjs';
 
 
 @Component({
@@ -16,6 +15,7 @@ export class MenuComponent {
   roomName: string = "";
   roomId: string = "";
   isServerConnected: boolean = false;
+  userName: string = "";
   
   constructor(private http: HttpClient, public router: Router, private route: ActivatedRoute) {}
 
@@ -30,8 +30,20 @@ export class MenuComponent {
       localStorage.removeItem('code');
    }
 
+   this.userName = localStorage.getItem('userName') as string;
+
     document.body.style.background = "rgb(134,203,255)";
     document.body.style.background = "linear-gradient(90deg, rgba(134,203,255,1) 0%, rgba(180,170,213,1) 50%, rgba(134,203,255,1) 100%)";
+    let menu = document.getElementById("menu");
+    let menuSize = menu?.clientHeight;
+    let documentSize = document.documentElement.clientHeight;
+    if(menuSize != undefined && menuSize != null && documentSize != undefined && documentSize != null){
+      let marginTop = (documentSize - menuSize) / 2;
+      menu?.setAttribute("style", "margin-top: " + marginTop + "px;");
+    }
+
+  
+
 
     this.http.get(env.baseURL + '/ping').subscribe((data: { [key: string]: any }) => {
       if(data['ping'] == 'pong'){
@@ -54,43 +66,59 @@ export class MenuComponent {
   }
 
   videoElement!: HTMLVideoElement;
+  scanning: boolean = false;
+  scanner: any;
 
   scanQR() {
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-      .then(stream => {
+      if (!this.scanning) {
+        this.scanning = true;
+
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }).then(stream => {
         import('qr-scanner').then(QrScanner => {
           if (this.videoElement) {
             this.videoElement.classList.remove("hidden");
   
-            let scanner = new QrScanner.default(
+            this.scanner = new QrScanner.default(
               this.videoElement,
               result => {
                 if (result.data.includes('http') && result.data.includes("menu")) {
-                  scanner.pause();
-                  scanner.stop();
-                  scanner.destroy();
+                  this.scanner.pause();
+                  this.scanner.stop();
+                  this.scanner.destroy();
                   setTimeout(() => {
                     this.connectRoom(result.data.split("menu/")[1]);
                   }, 1000);
                 }
               },
               {
-                onDecodeError: error => {
-                  console.error(error);
-                },
+                onDecodeError: error => {},
                 highlightScanRegion: true,
                 highlightCodeOutline: true,
               }
             );
   
-            scanner.start();
+            this.scanner.start();
           }
         });
       })
       .catch(error => {
         console.error('Error al acceder a la cámara:', error);
-        // Puedes manejar el error de acceso a la cámara aquí
       });
+    }
+    else{
+      this.scanning = false;
+      this.videoElement.classList.add("hidden");
+      this.scanner.pause();
+      this.scanner.stop();
+      this.scanner.destroy();
+    }
+    
+  }
+
+  logout(){
+    localStorage.removeItem('token');
+    localStorage.removeItem('userName');
+    this.router.navigate(['login']);
   }
 
   createRoom(name: string) {
@@ -149,7 +177,20 @@ export class MenuComponent {
     }
   }
   
-  connectRoom(code: string) {    
+  connectRoom(code: string) {
+    if(code.length < 4){
+      Toastify({
+        text: `¡El codigo debe tener 4 caracteres!`,
+        duration: 3000,
+        gravity: "bottom",
+        position: "right",
+        style: {
+          background: "#ff0000",
+        },
+      }).showToast();
+      return;
+    }
+
     let token = localStorage.getItem('token');
     if(token != null && token != undefined && token != 'null'){
       this.http.post(env.baseURL + '/game/join', {  
@@ -169,7 +210,7 @@ export class MenuComponent {
           this.router.navigate(['room']);
         }else{
           Toastify({
-            text: `¡No se pudo conectar a la sala ${code}!`,
+            text: `¡No se pudo encontrar la sala ${code}!`,
             duration: 3000,
             gravity: "bottom",
             position: "right",

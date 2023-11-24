@@ -1,11 +1,41 @@
-body {
-  background: linear-gradient(to bottom, #c1e1e1, #a0d1d1);
-}
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600;1000&display=swap');
 
 .room-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.form-control{
+  -webkit-border-radius: 25px;
+  -moz-border-radius: 25px;
+  border-radius: 25px;
+}
+
+#videoqr{
+  margin-top: 10px;
+}
+
+hr{
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+.game-title {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 1000;
+  font-size: 50px;
+  margin-bottom: 20px;
+  margin-top: 20px;
+  text-align: center;
+  background: linear-gradient(90deg, rgba(134,203,255,1) 0%, rgba(180,170,213,1) 50%, rgba(134,203,255,1) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.text-center{
+  font-family: 'Nunito', sans-serif;
 }
 
 .room-item .right {
@@ -22,6 +52,7 @@ body {
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   border-radius: 5px;
+  border-radius: 25px;
 }
 
 .hidden{
@@ -50,20 +81,22 @@ body {
   display:inline-block;
 }
 
-.connection-text {
-  display: inline-block;
-  font-family: 'Arial', sans-serif;
-  font-size: 18px;
-}
-
 .connection-div {
   position: absolute;
-  bottom: 0;
+  top: 0;
   right: 0;
 }
 
-.btn {
-  border-radius: 50px;
+.btnPlay {
+  -webkit-border-radius: 0px;
+  -webkit-border-top-right-radius: 25px;
+  -webkit-border-bottom-right-radius: 25px;
+  -moz-border-radius: 0px;
+  -moz-border-radius-topright: 25px;
+  -moz-border-radius-bottomright: 25px;
+  border-radius: 0px;
+  border-top-right-radius: 25px;
+  border-bottom-right-radius: 25px;
   padding: 12px 25px;
   font-size: 16px;
   color: white;
@@ -72,22 +105,66 @@ body {
   transition: background-color 0.3s ease;
 }
 
+.selectiveo{
+  margin-bottom: -10px;
+}
 
-.btn.btn-danger {
+
+.btn.btn-activity {
   padding: 15px 30px;
   margin-top: 10px;
   margin-right: 20px;
   border-radius: 25px;
-  background-color: #006666; 
+  background-color: #4287f5; 
   color: white;
   border: none;
   cursor: pointer;
 }
 
-.btn.btn-danger:hover {
+.btn-qrScan {
+  border-radius: 25px;
+  color: white;
+  background-color: rgb(28, 156, 109);
+  padding: 10px 30px;
+}
+
+.btn-qrScanRed {
+  border-radius: 25px;
+  color: white;
+  background-color: #c9302c;
+  padding: 10px 30px;
+}
+
+.btn-qrScan:hover {
+  background-color: #006666;
+}
+
+.btnPlay:disabled {
+  background-color: rgba(36, 134, 98, 0.7) !important;
+  cursor: not-allowed;
+}
+
+.btnPlay:hover{
+  background-color: #006666;
+}
+
+.btn.btn-activity:hover {
   background-color: #00b3b3; 
 }
 
+.logout_button:hover {
+  background-color: #c9302c;
+  color: #000000;
+  transition: background-color 0.3s ease;
+}
+
+.logout_button {
+  border-radius: 5px;
+  background-color: transparent;
+  fill: #c9302c;
+  color: #c9302c;
+  border: none;
+}
 
 
 

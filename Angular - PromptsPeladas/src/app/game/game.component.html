@@ -2,9 +2,9 @@
   <div class="cortinaNumber">
     <div class="card text-center prompt">
       <div class="card-header">
-        <h1 class="promptText" id="prompt"> ❝ {{ myActivities[stage]?.description }} ❞</h1>
+        <h1 class="promptText" id="prompt"> ❝ {{ myActivities[stage].description }} ❞</h1>
         <hr class="promtsHr">
-        <p class="promptAuthor"> - {{ myActivities[stage]?.player_id }}</p>
+        <p class="promptAuthor"> - {{ myActivities[stage].player_id }}</p>
       </div>
     </div>
   </div>
@@ -19,9 +19,9 @@
       </div>
       <div class="card text-center prompt">
         <div class="card-header">
-          <h1 class="promptText">❝ {{ myActivities[stage]?.description }} ❞</h1>
+          <h1 class="promptText">❝ {{ myActivities[stage].description }} ❞</h1>
           <hr class="promtsHr">
-          <p class="promptAuthor">- {{ myActivities[stage]?.player_id }}</p>
+          <p class="promptAuthor">- {{ myActivities[stage].player_id }}</p>
         </div>
       </div>
       <br>
@@ -47,13 +47,15 @@
       </div>
       <div class="card text-center prompt">
         <div class="card-header">
-          <h1 class="promptText">❝ {{ answerActivities[index]?.description }} ❞</h1>
+          <h1 class="promptText">❝ {{ answerActivities[index].description }} ❞</h1>
           <hr class="promtsHr">
-          <p class="promptAuthor">- {{ answerActivities[index]?.player_id }}</p>
+          <p class="promptAuthor">- {{ answerActivities[index].player_id }}</p>
         </div>
-        <br>
-        <hr>
-        <br>
+      </div>
+      <br>
+      <hr>
+      <br>
+      <div class="card text-center prompt">
         <h1 class="promptText">❝ {{ answerActivities[index+2]}} ❞</h1>
         <hr class="promtsHr">
         <p class="promptAuthor">- {{ answerActivities[index+1] }}</p>

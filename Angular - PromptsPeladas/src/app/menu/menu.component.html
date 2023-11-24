@@ -1,46 +1,62 @@
-<div class="container">
+<div class="container" id="menu">
   <div class="row">
     <div class="col-sm-6 mx-auto">
-      <h1 class="text-center">Prompts - Peladas</h1>
-      <hr>
-      <h2 class="text-center">Unirse a una sala</h2>
-      <div class="input-group mb-3">
-        <input type="text" class="form-control" maxlength="4" placeholder="Código de la sala" aria-describedby="basic-addon2" #input>
-        <div class="input-group-append">
-          &nbsp;<button class="btn btn-info" type="button" (click)="input.value = input.value.toLocaleUpperCase();connectRoom(input.value)">Unirse</button>
-        </div>
+      <div class="card">
+        <div class="card-body">
+          <h1 class="game-title">Prompts - Peladas</h1>
+          <hr>
+          <h2 class="text-center">Unirse a una sala</h2>
+          <div class="input-group mb-3">
+            <input type="text" class="form-control" maxlength="4" placeholder="Código de la sala" aria-describedby="basic-addon2" #input>
+            <div class="input-group-append">
+              &nbsp;<button class="btnPlay" type="button" (click)="input.value = input.value.toLocaleUpperCase();connectRoom(input.value)">Unirse&nbsp;
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-right-circle" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <h4 class="text-center selectiveo">O</h4>
+          <video class="embed-responsive embed-responsive-1by1 video hidden" id="videoqr"></video>
+          <div class="text-center">
+            <button class="btn btn-qrScan" (click)="scanQR()" *ngIf="!scanning">Escanear codigo QR</button>
+            <button class="btn btn-qrScanRed" (click)="scanQR()" *ngIf="scanning">Detener</button>
+          </div>
+          <hr>
+          <h2 class="text-center">Crear una sala</h2>
+          <br>
+          <div class="input-group mb-3">
+            <input type="text" [(ngModel)]="roomName" class="form-control" placeholder="Nombre de la sala">
+            <div class="input-group-append">
+              &nbsp;<button class="btnPlay" type="button" [disabled]='roomName === ""' (click)="createRoom(roomName)">Crear&nbsp;
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-right-circle" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <hr>
+          <div class="text-center">
+            <button class="btn btn-activity" (click)="this.router.navigate(['activity']);">Crear Actividades</button>
+            <button class="btn btn-activity" (click)="this.router.navigate(['proposal']);">Crear Propuestas</button>
+          </div>
+          <br>
+          <hr>
+          <div class="text-center">
+            <h3 class="user-name">{{userName}}
+              <button class="logout_button" (click)="logout()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-box-arrow-in-right" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd" d="M6 3.5a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 0-1 0v2A1.5 1.5 0 0 0 6.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-8A1.5 1.5 0 0 0 5 3.5v2a.5.5 0 0 0 1 0z"/>
+                  <path fill-rule="evenodd" d="M11.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H1.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+                </svg>
+              </button>
+            </h3>
+          </div>
       </div>
-      <video class="embed-responsive embed-responsive-1by1 video hidden" id="videoqr"></video>
-      <div class="text-center">
-        <button class="btn btn-success " (click)="scanQR()">Escanear QR</button>
-      </div>
-      <hr>
-      <h2 class="text-center">Crear una sala</h2>
-      <br>
-      <div class="input-group mb-3">
-        <input type="text" [(ngModel)]="roomName" class="form-control" placeholder="Nombre de la sala">
-        <div class="input-group-append">
-          &nbsp;<button class="btn btn-success" type="button" [disabled]='roomName === ""' (click)="createRoom(roomName)">Crear y unirse</button>
-        </div>
-      </div>
-
-      <hr>
-
     </div>
   </div>
 </div>
 
 <div class="connection-div">
-  <div class="connection-text">Estado del servidor: &nbsp;</div>
   <div class="connection-dot" [ngClass]="{'green-dot': isServerConnected, 'red-dot': !isServerConnected}"></div>
 </div>
-
-<!-- Agregar boton de Crear Propuestas-->
-
-<div class="col-sm-6 mx-auto">
-  <div class="text-center">
-    <button class="btn btn-danger" (click)="this.router.navigate(['activity']);">Crear Actividades</button>
-    <button class="btn btn-danger" (click)="this.router.navigate(['proposal']);">Crear Propuestas</button>
-  </div>
-</div>
-

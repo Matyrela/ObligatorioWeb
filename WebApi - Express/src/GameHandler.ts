@@ -67,6 +67,7 @@ export class GameHandler {
                     return;
                 }
             }
+            res.send({ 'code': 'INVALID' });
         });
 
         app.post('/api/game/reconnect', async (req, res) => {
@@ -83,6 +84,7 @@ export class GameHandler {
                     }
                 }
             }
+            res.send({ 'code': 'INVALID' });
         });
 
         app.post('/api/game/quit', async (req, res) => {

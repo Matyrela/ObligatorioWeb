@@ -37,6 +37,7 @@ export class GameComponent {
 
   ngOnInit() {
     this.http.post(env.baseURL + '/game/reconnect', { token: localStorage.getItem('token') }).subscribe((data: { [key: string]: any }) => {
+      console.log(data);
       if (data['code'] != undefined && data['code'] != null && data['code'] != 'INVALID') {
         this.code = data['code'];
         this.connWebSocket();

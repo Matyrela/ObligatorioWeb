@@ -7,7 +7,7 @@ export class Game {
   name: string;
   players: string[];
   status: Status;
-  adminPlayer!: Player;
+  adminPlayer!: string;
   maxActivities: number = 0;
   playerPoints : Map<string,number> = new Map<string,number>();
 
@@ -23,33 +23,6 @@ export class Game {
   timer: number = 30;
   votes: number = 0;
   constructor(name: string, id: string, ws: any) {
-    /* this.activities = [
-      new Activity(1, "Nestor", "Marcas de autos"),
-      new Activity(2, "Martin", "Nombres de bizcochos"),
-      new Activity(3, "Linda", "Platillos típicos de Argentina"),
-      new Activity(4, "Juan Pablo", "Bandas de rock"),
-      new Activity(5, "Maria", "Juegos de mesa populares"),
-      new Activity(6, "Ravi", "Películas de ciencia ficción"),
-      new Activity(7, "Ming", "Culturas y sus festivales"),
-      new Activity(8, "Emma", "Canciones de amor famosas"),
-      new Activity(9, "Diego", "Bebidas alcohólicas icónicas"),
-      new Activity(10, "Sakura", "Literatura clásica mundial"),
-      new Activity(11, "Carlos", "Bailarines de salsa famosos"),
-      new Activity(12, "Jorge", "Juegos Olímpicos modernos"),
-      new Activity(13, "Sophia", "Actores de cine de Hollywood"),
-      new Activity(14, "Amina", "Países que han ganado la Copa del Mundo de fútbol"),
-      new Activity(15, "Eduardo", "Pintores famosos"),
-      new Activity(16, "Hiroshi", "Platillos típicos de Japón"),
-      new Activity(17, "Olivia", "Bandas de rock de los 80"),
-      new Activity(18, "Mikhail", "Videojuegos más vendidos de todos los tiempos"),
-      new Activity(19, "Carmen", "Premios Nobel de Literatura"),
-      new Activity(20, "Ali", "Científicos influyentes"),
-      new Activity(21, "Katya", "Culturas precolombinas de América"),
-      new Activity(22, "Luigi", "Películas de terror clásicas"),
-      new Activity(23, "Tatiana", "Bebidas tradicionales de Rusia"),
-      new Activity(24, "David", "Astronautas famosos"),
-      new Activity(25, "Isabella", "Juegos de cartas populares")
-    ]; */
     this.activities = [
       new Activity(1, "Nestor", "Adjetivos calificativos que describan a la mama del gonza"),
       new Activity(2, "Martin", "A que se asemeja el olor de patas de flou?"),
@@ -90,7 +63,7 @@ export class Game {
       });
 
       socket.on("startGame", (data: { [key: string]: any }) => {
-        if (data.name == this.adminPlayer.name) {
+        if (data.name == this.adminPlayer) {
           this.started = true;
           ws.of(this.url).emit("startGame");
 
@@ -143,6 +116,9 @@ export class Game {
         
       });
       console.log('Winner: ' + winner + 'Con ' + winnerPoints + ' puntos');
+      this.players.forEach(element => {
+        this.removePlayer(new Player(element));
+      });
       this.ws.of(this.url).emit("winner", { "playerWinner": winner })
       return;
     } else {
@@ -167,7 +143,7 @@ export class Game {
     }
   }
   public addPlayer(player: Player) {
-    if (this.players.length == 0) this.adminPlayer = player;
+    if (this.players.length == 0) this.adminPlayer = player.name;
     this.players.push(player.name);
     this.playerPoints.set(player.name,0);
   }
@@ -175,23 +151,27 @@ export class Game {
   public removePlayer(player: Player) {
     let adminWasChanged = false;
     this.playerPoints.delete(player.name);
-    this.players = this.players.filter((value) => {
-      return value !== player.name;
+    this.players = this.players.filter((pl) => {
+      return pl !== player.name;
     });
+    
 
-    if (player === this.adminPlayer) {
+    if (player.name === this.adminPlayer) {
       if (this.players.length > 0) {
         adminWasChanged = true;
-        this.adminPlayer.name =
-          this.players[Math.floor(Math.random() * this.players.length)];
+        this.adminPlayer = this.players[Math.floor(Math.random() * this.players.length)];
       }
     }
 
+    this.ws.of(this.url).emit("playerList", this.players);
+
     setTimeout(() => {
-      this.ws.of(this.url).emit("playerList", this.players);
-      if (adminWasChanged)
-        this.ws.of(this.url).emit("adminChange", this.adminPlayer);
+      if (adminWasChanged){
+        this.ws.of(this.url).emit("adminChange", {'name': this.adminPlayer});
+      }
     }, 1000);
+
+    this.ws.of(this.url).emit("playerList", this.players);
   }
 
   public sendChatMessage(message: string) {

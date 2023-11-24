@@ -45,14 +45,18 @@ export class RoomComponent {
       this.code = data['code'];
       this.roomName = data['roomName'];
       this.conStatus = data['status'];
-      this.admin = data['admin'].name;
+      this.admin = data['admin'];
 
-      this.connWebSocket();
+      if(this.code === "INVALID"){
+        this.router.navigate(['menu']);
+      }else{
+        this.connWebSocket();
 
-      let qrCanvas = document.getElementById('qrCode')
-      QRCode.toCanvas(qrCanvas,  env.angularURL + "menu/" + this.code, function (error: any) {
-        if (error) console.error(error)
-      })
+        let qrCanvas = document.getElementById('qrCode')
+        QRCode.toCanvas(qrCanvas,  env.angularURL + "menu/" + this.code, function (error: any) {
+          if (error) console.error(error)
+        })
+      }
     });
 
 
@@ -127,15 +131,16 @@ export class RoomComponent {
       });
     });
 
-    this.ws.on("playerList", (data: { [key: string]: any }[]) => {
+    this.ws.on("playerList", (data: string[]) => {        
       data.forEach((playerName) => {
-        const existingPlayer = this.playerList.find(player => player.name === playerName+"");
+        const existingPlayer = this.playerList.find(player => player.name.toLowerCase() === playerName.toLowerCase());
 
         if (!existingPlayer) {
-            const player = new Player(playerName+"");
+            const player = new Player(playerName);
             this.playerList.push(player);
         }
-    });
+      });
+      this.playerList = this.playerList.filter(player => data.some(playerName => player.name.toLowerCase() === playerName.toLowerCase()));
 
       const addedPlayers = this.playerList.filter(player => !this.previousPlayerList.some(prevPlayer => prevPlayer.name === player.name));
       const removedPlayers = this.previousPlayerList.filter(prevPlayer => !this.playerList.some(player => player.name === prevPlayer.name));
@@ -143,7 +148,7 @@ export class RoomComponent {
       if (this.previousPlayerList.length > 0) {
           addedPlayers.forEach(player => {
               Toastify({
-                  text: `¡${player.name} se ha unido!`, // Usar player.name en lugar de player
+                  text: `¡${player.name} se ha unido!`,
                   duration: 3000,
                   gravity: "top",
                   position: "right",
@@ -155,7 +160,7 @@ export class RoomComponent {
   
           removedPlayers.forEach(player => {
               Toastify({
-                  text: `¡${player.name} se ha desconectado!`, // Usar player.name en lugar de player
+                  text: `¡${player.name} se ha desconectado!`,
                   duration: 3000,
                   gravity: "top",
                   position: "right",
@@ -165,11 +170,12 @@ export class RoomComponent {
               }).showToast();
           });
       }
-  
-      this.previousPlayerList = this.playerList.slice(); // Hacer una copia para evitar referencias directas
+
+      this.previousPlayerList = this.playerList.slice();
   });
 
     this.ws.on("adminChange", (data: { [key: string]: any }) => {
+      console.log("ADMINCHANGE!!!!!!!!!", data)
       this.admin = data['name'];
       if(this.admin === localStorage.getItem("userName")){
         Toastify({
@@ -253,8 +259,19 @@ export class RoomComponent {
     this.http.post(env.baseURL + '/game/quit', {
       token : localStorage.getItem('token')
     }).subscribe((data: { [key: string]: any }) => {
-      if(data['removed'] == true)
+      if(data['removed'] == true){
         this.router.navigate(['menu']);
+      }else{
+        Toastify({
+          text: "No se ha podido abandonar la sala",
+          duration: 3000,
+          gravity: "top",
+          position: "right",
+          style: {
+            background: "#ff0000",
+          },
+        }).showToast();
+      }
     });
   }
 }
