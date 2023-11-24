@@ -129,7 +129,7 @@ export class Game {
     if (this.stage == 2) {
       this.ws.of(this.url).emit("answerActivities", { "answerActivities": this.answers });
     }
-    if (this.stage == this.maxActivities) {
+    if (this.stage == this.maxActivities + 2) {
       let winnerPoints : number = 0;
       let winner : string = Array.from(this.playerPoints.keys())[0];
       Array.from(this.playerPoints.keys()).forEach(element => {
