@@ -5,7 +5,6 @@ import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import * as Toastify from 'toastify-js';
 
-
 @Component({
   selector: 'app-menu',
   templateUrl: './menu.component.html',

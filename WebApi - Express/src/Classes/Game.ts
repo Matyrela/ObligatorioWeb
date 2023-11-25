@@ -10,6 +10,8 @@ export class Game {
   adminPlayer!: string;
   maxActivities: number = 0;
   playerPoints : Map<string,number> = new Map<string,number>();
+  gameWinner : string = "";
+  winnerPoints : number = 0;
 
   ws: any;
   url: string = "";
@@ -34,7 +36,8 @@ export class Game {
       new Activity(8, "Emma", "Olores que salen de la casa del gonza"),
       new Activity(9, "Diego", "Cual es el peor olor que emite flou?"),
       new Activity(10, "Sakura", "Que es lo que usa Enzo para lavarse el cabello?"),
-      new Activity(11, "Carlos", "lugares donde se puede encontrar a la mama del Pablo"),];
+      new Activity(11, "Carlos", "lugares donde se puede encontrar a la mama del Pablo"),
+    ];
 
     this.id = id;
     this.name = name;
@@ -47,9 +50,14 @@ export class Game {
     ws.of(this.url).on("connection", (socket: any) => {
       ws.of(this.url).emit("playerList", this.players);
       if (this.started) {
+        //Este if existe para que cuando alguien recargue la pagina o se reconecte, el juego pueda actualizarle las cosas al cliente que se reconecto.
         socket.emit("activityPlayer", { 'activityPlayer': this.activityPlayer });
         socket.emit("stage", { "stage": this.stage });
         socket.emit("timer", { 'timer': this.timer });
+        socket.emit("winner", { "playerWinner": this.gameWinner, "points": this.winnerPoints })
+        if (this.stage == 2) {
+          socket.emit("answerActivities", { "answerActivities": this.answers, "toAnswer": (this.maxActivities - 2) });
+        }
       }
 
       //--------------------------------------------------------------------------------
@@ -76,6 +84,7 @@ export class Game {
           }, 5000);
         }
       });
+
       socket.on("submitAnswer", (data: { [key: string]: any }) => {
         this.answers.push(data['activities']);
         this.answers.push(data['userName']);
@@ -85,6 +94,7 @@ export class Game {
           console.log(element);
         });*/
       });
+
       socket.on("scorePoint", (data: { [key: string]: any }) => {
           let name = data['userName'];
           //suma un punto a la persona que gano
@@ -96,33 +106,34 @@ export class Game {
     });
   }
 
-
-
   public startAnswerTimer() {
     if (this.stage == 2) {
       console.log('answers: ', this.answers);
       this.ws.of(this.url).emit("answerActivities", { "answerActivities": this.answers, "toAnswer": (this.maxActivities-2) });
     }
+
     if (this.stage == this.maxActivities) {
-      let winnerPoints : number = 0;
-      let winner : string = Array.from(this.playerPoints.keys())[0];
+      this.gameWinner = Array.from(this.playerPoints.keys())[0];
       Array.from(this.playerPoints.keys()).forEach(element => {
         let points = this.playerPoints.get(element);
         if (points != undefined){
-          if (points > winnerPoints){
-            winner = element;
-            winnerPoints = points;
+          if (points > this.winnerPoints){
+            this.gameWinner = element;
+            this.winnerPoints = points;
           }
         }
         
       });
-      console.log('Winner: ' + winner + 'Con ' + winnerPoints + ' puntos');
+      console.log('Winner: ' + this.gameWinner + 'Con ' + this.winnerPoints + ' puntos');
       this.players.forEach(element => {
         this.removePlayer(new Player(element));
       });
-      this.ws.of(this.url).emit("winner", { "playerWinner": winner })
+      this.ws.of(this.url).emit("winner", { "playerWinner": this.gameWinner, "points": this.winnerPoints })
+
       return;
-    } else {
+    } 
+
+    else {
       this.ws.of(this.url).emit("newStage");
       this.ws.of(this.url).emit("stage", { "stage": this.stage });
       let x = setInterval(() => {

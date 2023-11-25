@@ -10,7 +10,7 @@
   </div>
 </div>
 
-<div class="container promptHolder" *ngIf="votation == false">
+<div class="container promptHolder" *ngIf="votation == false && this.winner == ''">
   <div class="row">
     <div class="col-lg-8 mx-auto">
       <h1 class="text-center promptTitle">¡Responde con algo chistoso!</h1>
@@ -32,13 +32,14 @@
         <div class="text-center">
           <br>
           <button type="button" class="btn btn-primary btn-lg btn-block btn-prompt"
-            (click)="submitAnswer()">Submit</button>
+            (click)="submitAnswer()">Enviar</button>
         </div>
       </div>
     </div>
   </div>
 </div>
-<div class="container promptHolder" *ngIf="votation == true">
+
+<div class="container promptHolder" *ngIf="votation == true && winner == ''">
   <div class="row">
     <div class="col-lg-8 mx-auto">
       <h1 class="text-center promptTitle">¡Vota la que te parezca mejor!</h1>
@@ -56,25 +57,39 @@
       <hr>
       <br>
       <div class="card text-center prompt">
-        <h1 class="promptText">❝ {{ answerActivities[index+2]}} ❞</h1>
+        <h1 class="promptText">❝ {{ answerActivities[index + 2]}} ❞</h1>
         <hr class="promtsHr">
-        <p class="promptAuthor">- {{ answerActivities[index+1] }}</p>
+        <p class="promptAuthor">- {{ answerActivities[index + 1] }}</p>
       </div>
       <div class="container votationHolder" style="display: flex;">
-        <button type="button" (click)="scorePoint(answerActivities[index+1])">ESTE</button>
+        <button class="btn" type="button" (click)="scorePoint(answerActivities[index + 1])">ESTE</button>
       </div>
       <br>
       <hr>
       <br>
       <div class="card text-center prompt">
-        <h1 class="promptText">❝ {{ answerActivities[index+5] }} ❞</h1>
+        <h1 class="promptText">❝ {{ answerActivities[index + 5] }} ❞</h1>
         <hr class="promtsHr">
-        <p class="promptAuthor">- {{ answerActivities[index+4] }}</p>
+        <p class="promptAuthor">- {{ answerActivities[index + 4] }}</p>
       </div>
       <div class="container votationHolder" style="display: flex;">
-        <button type="button" (click)="scorePoint(answerActivities[index+4])">ESTE</button>
+        <button class="btn" type="button" (click)="scorePoint(answerActivities[index + 4])">ESTE</button>
       </div>
     </div>
   </div>
 </div>
-<H1 *ngIf="winnerCheck">EL GANADOR ES: {{winner}}</H1>
+
+<div class="row">
+  <div class="col-lg-8 mx-auto">
+    <div class="winnerScreen text-center" *ngIf="winner != ''">
+      <div class="card">
+        <div class="card-header">
+          <h1>{{ winner }} ha ganado!</h1>
+        </div>
+        <div class="card-body">
+          <button class="btn btn-primary btn-lg btn-block btn-prompt" (click)="quitRoom()">Volver al menu</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -87,3 +87,9 @@
         margin-top: calc(50vh - var(--textSize) - 30vh);
     }
   }
+
+.winnerScreen{
+    text-align: center;
+    margin-top: 10vh;
+
+}
