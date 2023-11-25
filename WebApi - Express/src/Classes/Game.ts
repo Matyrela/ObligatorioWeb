@@ -100,7 +100,6 @@ export class Game {
 
   public startAnswerTimer() {
     if (this.stage == 2) {
-      console.log('answers: ', this.answers);
       this.ws.of(this.url).emit("answerActivities", { "answerActivities": this.answers, "toAnswer": (this.maxActivities-2) });
     }
     if (this.stage == this.maxActivities) {

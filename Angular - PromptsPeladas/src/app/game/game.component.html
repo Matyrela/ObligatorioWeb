@@ -10,7 +10,7 @@
   </div>
 </div>
 
-<div class="container promptHolder" *ngIf="votation == false">
+<div class="container promptHolder" *ngIf="answerTime">
   <div class="row">
     <div class="col-lg-8 mx-auto">
       <h1 class="text-center promptTitle">¡Responde con algo chistoso!</h1>
@@ -31,14 +31,14 @@
         <textarea class="form-control" rows="2" [(ngModel)]="answer" placeholder="¡Responde aqui!"></textarea>
         <div class="text-center">
           <br>
-          <button type="button" class="btn btn-primary btn-lg btn-block btn-prompt"
+          <button type="button" *ngIf="!anwserSubmitted" class="btn btn-primary btn-lg btn-block btn-prompt"
             (click)="submitAnswer()">Submit</button>
         </div>
       </div>
     </div>
   </div>
 </div>
-<div class="container promptHolder" *ngIf="votation == true">
+<div class="container promptHolder" *ngIf="votationTime == true">
   <div class="row">
     <div class="col-lg-8 mx-auto">
       <h1 class="text-center promptTitle">¡Vota la que te parezca mejor!</h1>

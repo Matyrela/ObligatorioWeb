@@ -23,10 +23,11 @@ export class GameComponent {
   stage: number = 0;
   index: number = -3;
   answer: string = "";
-  votation: boolean = false;
   winner: string ="";
-  winnerCheck : boolean = false;
   anwserSubmitted: boolean = false;
+  answerTime : boolean = true;
+  votationTime: boolean = false;
+  winnerCheck : boolean = false;
 
   timer: string = "--";
   show: boolean = false;
@@ -124,8 +125,8 @@ export class GameComponent {
       console.log("stage" + data['stage'])
       this.stage = data['stage'] as number;
       if (this.stage == 2) {
-        this.votation = true;
-        console.log("votation" + this.votation);
+        this.votationTime = true;
+        this.answerTime = false;
         this.index = 0;
       }
       if (this.stage > 2)
@@ -135,14 +136,14 @@ export class GameComponent {
 
     this.ws.on("timer", (data: { [key: string]: any }) => {
       if (data['timer'] == "¡Se acabó el tiempo!" && this.stage < 2) {
-        //this.submitAnswer();
+        this.submitAnswer();
       }
 
       this.timer = data['timer'];
     });
     this.ws.on("winner", (data: { [key: string]: any})=>{
       this.winner = data['playerWinner'];
-      this.votation = false;
+      this.votationTime = false;
       this.winnerCheck = true;
     })
   }
