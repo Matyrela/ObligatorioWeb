@@ -49,7 +49,9 @@ export class GameComponent {
 
   submitAnswer() {
     this.anwserSubmitted = true;
-    this.ws.emit('submitAnswer', {'activities' : this.myActivities[this.stage] , 'userName': localStorage.getItem("userName"), 'answer': this.answer });
+    if (this.answer != "") {
+      this.ws.emit('submitAnswer', {'activities' : this.myActivities[this.stage] , 'userName': localStorage.getItem("userName"), 'answer': this.answer });
+    }
     this.answer = "";
   }
   scorePoint(userName: string) {
@@ -74,44 +76,40 @@ export class GameComponent {
       }
     });
     this.ws.on('answerActivities', (data: { [key: string]: any }) => {
-      let content = data['answerActivities'] as any[];
-      let orderContent : any[] = [];
+      let answers = data['answerActivities'] as any[];
+      let toAnswer = data['toAnswer'] as number;
       let i = 0;
-      while (content.length != orderContent.length) { 
-        if (!orderContent.includes(content[i])) {
-          orderContent.push(content[i]);
-          orderContent.push(content[i + 1]);
-          orderContent.push(content[i + 2]);
-          let j = i+3;
-          while (j < content.length - 1) {
-            if (content[j]?.id === content[i]?.id && content[i+1] === content[j+1] && content[j+2] !== '') {
-              orderContent.push(content[j]);
-              orderContent.push(content[j + 1]);
-              orderContent.push(content[j + 2]);
-              break;
+      //me quedo con las respuestas que debo votar (osea no las que corresponden a mis preguntas contestadas)
+      while (i < answers.length) {
+        if(answers[i+1] == localStorage.getItem("userName")){
+          let id = answers[i]?.id;
+          answers.splice(i, 3);
+          answers.forEach(element => {
+            if (element.id == id) {
+              let index = answers.indexOf(element);
+              answers.splice(index, 3);
             }
-            j += 3;
+          });
+        }
+        i += 3;
+      }
+      i= 0;
+      //ordeno las respuestas por id para que tenga sentido la votacion
+      while (this.answerActivities.length < toAnswer * 3) {
+        this.answerActivities.push(answers[i]);
+        this.answerActivities.push(answers[i + 1]);
+        this.answerActivities.push(answers[i + 2]);
+        let j = i+3;
+        while (j < answers.length) {
+          if (answers[j].id == answers[i].id) {
+            this.answerActivities.push(answers[j]);
+            this.answerActivities.push(answers[j + 1]);
+            this.answerActivities.push(answers[j + 2]);
           }
-        }
-        
-        i += 3;
-      }
-      i = 0;
-      let finalList : any[] = []; //tengo que hacer esto porque ts es una basura y no me eliminaba los strings vacios, que por algun motivo eran muchos
-      while (i < orderContent.length) {
-        if (orderContent[i + 2] === "" || orderContent[i+1] === "" || orderContent[i] === "") {
-          orderContent.splice(i, 3);
-        }else{
-          if (orderContent[i+1] !== localStorage.getItem("userName") && orderContent[i+2] !== localStorage.getItem("userName")){
-            finalList.push(orderContent[i]);
-            finalList.push(orderContent[i+1]);
-            finalList.push(orderContent[i+2]);
-          } //poner este if para que el jugador no pueda votar sus propias respuestas
-          
+          j += 3;
         }
         i += 3;
       }
-      this.answerActivities = finalList;
       console.log(this.answerActivities);
     });
     this.ws.on('newStage', (data: { [key: string]: any }) => {
@@ -137,7 +135,7 @@ export class GameComponent {
 
     this.ws.on("timer", (data: { [key: string]: any }) => {
       if (data['timer'] == "¡Se acabó el tiempo!" && this.stage < 2) {
-        this.submitAnswer();
+        //this.submitAnswer();
       }
 
       this.timer = data['timer'];

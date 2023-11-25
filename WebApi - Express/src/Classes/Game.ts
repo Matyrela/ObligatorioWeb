@@ -100,9 +100,10 @@ export class Game {
 
   public startAnswerTimer() {
     if (this.stage == 2) {
-      this.ws.of(this.url).emit("answerActivities", { "answerActivities": this.answers });
+      console.log('answers: ', this.answers);
+      this.ws.of(this.url).emit("answerActivities", { "answerActivities": this.answers, "toAnswer": (this.maxActivities-2) });
     }
-    if (this.stage == this.maxActivities + 2) {
+    if (this.stage == this.maxActivities) {
       let winnerPoints : number = 0;
       let winner : string = Array.from(this.playerPoints.keys())[0];
       Array.from(this.playerPoints.keys()).forEach(element => {
