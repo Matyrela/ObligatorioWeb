@@ -23,7 +23,7 @@ export class Game {
   timer: number = 30;
   votes: number = 0;
   constructor(name: string, id: string, ws: any) {
-    this.activities = [
+    /* this.activities = [
       new Activity(1, "Nestor", "Adjetivos calificativos que describan a la mama del gonza"),
       new Activity(2, "Martin", "A que se asemeja el olor de patas de flou?"),
       new Activity(3, "Linda", "Que es lo que mas le gusta a la mama del gonza?"),
@@ -34,7 +34,9 @@ export class Game {
       new Activity(8, "Emma", "Olores que salen de la casa del gonza"),
       new Activity(9, "Diego", "Cual es el peor olor que emite flou?"),
       new Activity(10, "Sakura", "Que es lo que usa Enzo para lavarse el cabello?"),
-      new Activity(11, "Carlos", "lugares donde se puede encontrar a la mama del Pablo"),];
+      new Activity(11, "Carlos", "lugares donde se puede encontrar a la mama del Pablo"),]; */
+
+    this.activities = [];
 
     this.id = id;
     this.name = name;
@@ -63,8 +65,10 @@ export class Game {
       });
 
       socket.on("startGame", (data: { [key: string]: any }) => {
-        if (data.name == this.adminPlayer) {
+        if (data['name'] == this.adminPlayer) {
           this.started = true;
+          this.activities = data['proposal'].activityList
+          console.log(data['proposal'])
           ws.of(this.url).emit("startGame");
 
           this.getActivities();
