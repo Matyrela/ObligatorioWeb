@@ -21,6 +21,8 @@ export class RoomComponent {
   conStatus: string = "";
   admin: string = "";
 
+  viewProposals: boolean = false;
+
   ls = localStorage;
 
   playerList: Array<Player> = new Array<Player>();
@@ -57,10 +59,7 @@ export class RoomComponent {
       } else {
         this.connWebSocket();
 
-        let qrCanvas = document.getElementById('qrCode')
-        QRCode.toCanvas(qrCanvas, env.angularURL + "menu/" + this.code, function (error: any) {
-          if (error) console.error(error)
-        })
+        this.generateQR();
       }
     });
 
@@ -86,6 +85,19 @@ export class RoomComponent {
   startCountdown(countDown: number): void {
     if (this.start)
       return;
+
+      if(this.selectedProposalID == "" || this.selectedProposalID == null){
+        Toastify({
+          text: "Debes seleccionar una propuesta",
+          duration: 3000,
+          gravity: "top",
+          position: "right",
+          style: {
+            background: "#ff0000",
+          },
+        }).showToast();
+        return;
+      }
 
     this.start = true;
     let selectedProposal = null;
@@ -273,13 +285,9 @@ export class RoomComponent {
   }
   
   checkProposalStatus(event:any){
-    // Check if radio button is checked
     if(event.target.checked == true){
       
-      // Get checked radio button's value
       let radioValue = event.target.id;
-      // Print in console
-      console.log(radioValue);
       this.selectedProposalID = radioValue;
     }
   }
@@ -308,5 +316,22 @@ export class RoomComponent {
         }).showToast();
       }
     });
+  }
+
+  toggleProposals() {
+    this.viewProposals = !this.viewProposals
+    if(!this.viewProposals){
+      //Este setTimeout esta porque angular quita el elemento del DOM con el id qrCode, entonces la funcion tira error, al esperar 15ms, el elemento ya esta en el DOM
+      setTimeout(() => {
+        this.generateQR();
+      }, 15);
+      }
+  }
+
+  generateQR(){
+      let qrCanvas = document.getElementById('qrCode')
+      QRCode.toCanvas(qrCanvas, env.angularURL + "menu/" + this.code, function (error: any) {
+        if (error) console.error(error)
+      })
   }
 }

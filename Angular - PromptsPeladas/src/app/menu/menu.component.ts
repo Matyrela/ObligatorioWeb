@@ -4,7 +4,7 @@ import { env } from "../enviroment"
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import * as Toastify from 'toastify-js';
-
+import { fromEvent, Observable, Subscription } from "rxjs";
 
 @Component({
   selector: 'app-menu',
@@ -34,16 +34,12 @@ export class MenuComponent {
 
     document.body.style.background = "rgb(134,203,255)";
     document.body.style.background = "linear-gradient(90deg, rgba(134,203,255,1) 0%, rgba(180,170,213,1) 50%, rgba(134,203,255,1) 100%)";
-    let menu = document.getElementById("menu");
-    let menuSize = menu?.clientHeight;
-    let documentSize = document.documentElement.clientHeight;
-    if(menuSize != undefined && menuSize != null && documentSize != undefined && documentSize != null){
-      let marginTop = (documentSize - menuSize) / 2;
-      menu?.setAttribute("style", "margin-top: " + marginTop + "px;");
-    }
 
-  
-
+    this.centerMenu();
+    this.resizeObservable = fromEvent(window, 'resize')
+    this.resizeSubscription = this.resizeObservable.subscribe( evt => {
+      this.centerMenu();
+    })
 
     this.http.get(env.baseURL + '/ping').subscribe((data: { [key: string]: any }) => {
       if(data['ping'] == 'pong'){
@@ -68,6 +64,23 @@ export class MenuComponent {
   videoElement!: HTMLVideoElement;
   scanning: boolean = false;
   scanner: any;
+
+  resizeObservable!: Observable<Event>;
+  resizeSubscription!: Subscription;
+
+  onResize(event: any) {
+    this.centerMenu();
+  }
+
+  centerMenu(){
+    let menu = document.getElementById("menu");
+    let menuSize = menu?.clientHeight;
+    let documentSize = document.documentElement.clientHeight;
+    if(menuSize != undefined && menuSize != null && documentSize != undefined && documentSize != null){
+      let marginTop = (documentSize - menuSize) / 2;
+      menu?.setAttribute("style", "margin-top: " + marginTop + "px;");
+    }
+  }
 
   scanQR() {
       if (!this.scanning) {
@@ -227,6 +240,7 @@ export class MenuComponent {
 
   ngOnDestroy(): void {
     document.body.style.background = "white";
+    this.resizeSubscription.unsubscribe();
   }
 
   protected readonly clientStatus = clientStatus;

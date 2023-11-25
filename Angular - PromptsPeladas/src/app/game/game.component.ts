@@ -4,9 +4,8 @@ import { Router } from '@angular/router';
 import { env } from '../enviroment';
 import { io } from "socket.io-client";
 import { Activity } from '../../app/clases/activity';
-import { Player } from '../clases/Player';
-import { type } from 'os';
-import { log } from 'console';
+
+import party from "party-js";
 
 @Component({
   selector: 'app-game',
@@ -23,7 +22,11 @@ export class GameComponent {
   stage: number = 0;
   index: number = -3;
   answer: string = "";
-  winner: string ="";
+
+  votation: boolean = false;
+  winner: string = "";
+  winnerPoints: number = 0;
+
   anwserSubmitted: boolean = false;
   answerTime : boolean = true;
   votationTime: boolean = false;
@@ -31,8 +34,6 @@ export class GameComponent {
 
   timer: string = "--";
   show: boolean = false;
-
-
 
   constructor(private http: HttpClient, private router: Router) { }
 
@@ -46,6 +47,39 @@ export class GameComponent {
         this.router.navigate(['/menu']);
       }
     });
+
+    this.winner = "";
+
+    setTimeout(() => {
+      //PARTE 1: RESPONDER SI CONDICIONES = (votation == false && this.winner == '')
+      //PARTE 2: VOTAR SI CONDICIONES = (votation == true && winner == '')
+      //PARTE 3: MOSTRAR GANADOR SI CONDICIONES = (winner != '')
+
+      if(this.votation == false && this.winner == ''){
+        console.log("votation == false && this.winner == ''")
+        
+        console.log("VOTATION: " + this.votation);
+        console.log("WINNER: " + this.winner);
+
+        console.log("parte 1");
+      }
+      if(this.votation == true && this.winner == ''){
+        console.log("votation == true && this.winner == ''")
+
+        console.log("VOTATION: " + this.votation);
+        console.log("WINNER: " + this.winner);
+
+        console.log("parte 2");
+      }
+      if(this.winner != ''){
+        console.log("winner != ''")
+
+        console.log("WINNER: " + this.winner);
+
+        console.log("parte 3");
+      }
+      
+    }, 2000);
   }
 
   submitAnswer() {
@@ -53,11 +87,13 @@ export class GameComponent {
     if (this.answer != "") {
       this.ws.emit('submitAnswer', {'activities' : this.myActivities[this.stage] , 'userName': localStorage.getItem("userName"), 'answer': this.answer });
     }
+
     this.answer = "";
   }
+
   scorePoint(userName: string) {
     this.ws.emit('scorePoint', {'userName' : userName}); 
-    }
+  }
 
   connWebSocket() {
     this.ws = io(env.WebSocket + this.code, {
@@ -76,6 +112,7 @@ export class GameComponent {
         }
       }
     });
+
     this.ws.on('answerActivities', (data: { [key: string]: any }) => {
       let answers = data['answerActivities'] as any[];
       let toAnswer = data['toAnswer'] as number;
@@ -94,7 +131,7 @@ export class GameComponent {
         }
         i += 3;
       }
-      i= 0;
+      i = 0;
       //ordeno las respuestas por id para que tenga sentido la votacion
       while (this.answerActivities.length < toAnswer * 3) {
         this.answerActivities.push(answers[i]);
@@ -141,10 +178,37 @@ export class GameComponent {
 
       this.timer = data['timer'];
     });
+
     this.ws.on("winner", (data: { [key: string]: any})=>{
       this.winner = data['playerWinner'];
+      this.winnerPoints = data['points'];
+      if(this.winner != ''){
+        this.winnerSet();
+      }
+
       this.votationTime = false;
       this.winnerCheck = true;
     })
+  }
+
+  winnerSet(){
+    party.confetti(document.getElementsByTagName('body')[0] as HTMLElement, {
+      count: party.variation.range(40, 80),
+      spread: 50,
+      size: party.variation.range(1, 2),
+    });
+  }
+
+
+  quitRoom() {
+    this.http.post(env.baseURL + '/game/quit', {
+      token : localStorage.getItem('token')
+    }).subscribe((data: { [key: string]: any }) => {
+      if(data['removed'] == true){
+        this.router.navigate(['menu']);
+      }else{
+        console.log('Error al salir de la sala');
+      }
+    });
   }
 }

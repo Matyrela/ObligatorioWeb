@@ -30,17 +30,42 @@
           <h2 class="title">Configuración</h2>
           <hr>
           <div class="card-body colContent">
-            <div class="roomData">
+            <div class="roomData" *ngIf="!viewProposals">
               <h3>Código de la sala</h3>
               <h1>{{code}}</h1>
               <h3>o</h3>
               <canvas id="qrCode"></canvas>
             </div>
+            <div *ngIf="viewProposals">
+              <div class="text-center" *ngIf="proposals.length == 0">
+                <h5>¡Actualmente no hay propuestas!</h5>
+                <br>
+                <p>Puedes crear nuevas propuestas desde el menú del juego.</p>
+              </div>
+              <p *ngIf="proposals.length != 0">Elige una de las siguientes:</p>
+              <ul class="list-group">
+                <li class="list-group-item" *ngFor="let proposal of proposals">
+                  <input class="form-check-input" type="radio" name="flexRadioDefault" id="{{proposal._id}}" (change)="checkProposalStatus($event);">
+                  <label class="form-check-label" for="flexRadioDefault1">
+                    <span> {{proposal.description}} </span>
+                  </label>
+                </li>
+              </ul>
+            </div>
           </div>
           <hr>
           <div class="title">
-            <button class="btn btn-success" [ngClass]="{'disabled': this.admin != (ls.getItem('userName'))}"
-              (click)=" this.startCountdown(3);">Iniciar juego</button>
+            <div class="d-grid gap-2 d-md-block adminButtons" *ngIf="(this.admin == (ls.getItem('userName')))">
+              <button class="btn btn-success adminBtn left"
+                (click)=" this.startCountdown(3);">Iniciar juego
+              </button>
+              <button class="btn btn-secondary adminBtn right"
+                (click)=" toggleProposals() ">Elegir Propuestas
+              </button>
+            </div>
+            <div *ngIf="(this.admin != (ls.getItem('userName')))">
+              <h3>Esperando a que empiece...</h3>
+            </div>
           </div>
         </div>
       </div>
@@ -49,7 +74,7 @@
     <div class="col-md-4">
       <div class="card">
         <div class="card-body">
-          <h2 class="title">Jugadores</h2>
+          <h2 class="title" >Jugadores - {{playerList.length}}</h2>
           <hr>
           <div class="card-body colContent">
             <ul class="list-group">
@@ -73,22 +98,6 @@
           <div class="title">
             <button class="btn btn-danger" (click)="quitRoom()">Salir de la sala</button>
           </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-4">
-      <div class="card">
-        <div class="card-body">
-          <h2 class="title">Lista de Propuestas</h2>
-          <ul class="list-group">
-            <li class="list-group-item" *ngFor="let proposal of proposals">
-              <input class="form-check-input" type="radio" name="flexRadioDefault" id="{{proposal._id}}" (change)="checkProposalStatus($event);">
-              <label class="form-check-label" for="flexRadioDefault1">
-                <span> {{proposal.description}} </span>
-              </label>
-            </li>
-          </ul>
         </div>
       </div>
     </div>

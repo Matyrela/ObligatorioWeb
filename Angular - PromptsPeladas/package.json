@@ -21,6 +21,7 @@
     "@ng-bootstrap/ng-bootstrap": "^15.1.1",
     "@popperjs/core": "^2.11.6",
     "bootstrap": "^5.2.3",
+    "party-js": "^2.2.0",
     "qr-scanner": "^1.4.2",
     "qrcode": "^1.5.3",
     "rxjs": "~7.8.0",
