@@ -22,10 +22,15 @@ export class GameComponent {
   stage: number = 0;
   index: number = -3;
   answer: string = "";
+
   votation: boolean = false;
   winner: string = "";
   winnerPoints: number = 0;
+
   anwserSubmitted: boolean = false;
+  answerTime : boolean = true;
+  votationTime: boolean = false;
+  winnerCheck : boolean = false;
 
   timer: string = "--";
   show: boolean = false;
@@ -157,8 +162,8 @@ export class GameComponent {
       console.log("stage" + data['stage'])
       this.stage = data['stage'] as number;
       if (this.stage == 2) {
-        this.votation = true;
-        console.log("votation" + this.votation);
+        this.votationTime = true;
+        this.answerTime = false;
         this.index = 0;
       }
       if (this.stage > 2)
@@ -180,8 +185,9 @@ export class GameComponent {
       if(this.winner != ''){
         this.winnerSet();
       }
-      
-      this.votation = false;
+
+      this.votationTime = false;
+      this.winnerCheck = true;
     })
   }
 

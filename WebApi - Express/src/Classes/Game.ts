@@ -25,19 +25,8 @@ export class Game {
   timer: number = 30;
   votes: number = 0;
   constructor(name: string, id: string, ws: any) {
-    this.activities = [
-      new Activity(1, "Nestor", "Adjetivos calificativos que describan a la mama del gonza"),
-      new Activity(2, "Martin", "A que se asemeja el olor de patas de flou?"),
-      new Activity(3, "Linda", "Que es lo que mas le gusta a la mama del gonza?"),
-      new Activity(4, "Juan Pablo", "Mejores lugares para tener relaciones en un barril (enzorriles)"),
-      new Activity(5, "Maria", "Que pasaría si enzo se corta el pelo? (solo respuestas incorrectas)"),
-      new Activity(6, "Ravi", "¿Porque el Gonza no se baña?"),
-      new Activity(7, "Ming", "Zonas erógenas de la mama del gonza"),
-      new Activity(8, "Emma", "Olores que salen de la casa del gonza"),
-      new Activity(9, "Diego", "Cual es el peor olor que emite flou?"),
-      new Activity(10, "Sakura", "Que es lo que usa Enzo para lavarse el cabello?"),
-      new Activity(11, "Carlos", "lugares donde se puede encontrar a la mama del Pablo"),
-    ];
+    this.activities = [];
+
 
     this.id = id;
     this.name = name;
@@ -71,8 +60,10 @@ export class Game {
       });
 
       socket.on("startGame", (data: { [key: string]: any }) => {
-        if (data.name == this.adminPlayer) {
+        if (data['name'] == this.adminPlayer) {
           this.started = true;
+          this.activities = data['proposal'].activityList
+          console.log(data['proposal'])
           ws.of(this.url).emit("startGame");
 
           this.getActivities();
@@ -108,7 +99,6 @@ export class Game {
 
   public startAnswerTimer() {
     if (this.stage == 2) {
-      console.log('answers: ', this.answers);
       this.ws.of(this.url).emit("answerActivities", { "answerActivities": this.answers, "toAnswer": (this.maxActivities-2) });
     }
 

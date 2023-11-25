@@ -1,4 +1,4 @@
-<div  class="cortina" [style.display]="this.start ? 'block' : 'none'" id="cortina">
+<div class="cortina" [style.display]="this.start ? 'block' : 'none'" id="cortina">
   <p class="cortinaNumber text-center" *ngIf="countdown != ''"> {{countdown}} </p>
 </div>
 
@@ -11,12 +11,14 @@
           <h2 class="title">{{roomName}} chat</h2>
           <hr>
           <div class="card-body colContent chat" id="chat">
-            <div class="message text-muted" style="text-align: center;">-- Este es el inicio de la sala {{roomName}} --</div>
+            <div class="message text-muted" style="text-align: center;">-- Este es el inicio de la sala {{roomName}} --
+            </div>
             <div class="message" *ngFor="let message of chatMessages">{{message}}</div>
           </div>
           <hr>
           <div class="input-group">
-            <input type="text" class="form-control" [(ngModel)]="message" (keydown.enter)="sendMessage()" placeholder="Escribe tu mensaje...">
+            <input type="text" class="form-control" [(ngModel)]="message" (keydown.enter)="sendMessage()"
+              placeholder="Escribe tu mensaje...">
             <button class="btn btn-primary" (click)="sendMessage()">Enviar</button>
           </div>
         </div>
@@ -37,11 +39,13 @@
           </div>
           <hr>
           <div class="title">
-            <button class="btn btn-success" [ngClass]="{'disabled': this.admin != (ls.getItem('userName'))}" (click)=" this.startCountdown(3);">Iniciar juego</button>
+            <button class="btn btn-success" [ngClass]="{'disabled': this.admin != (ls.getItem('userName'))}"
+              (click)=" this.startCountdown(3);">Iniciar juego</button>
           </div>
         </div>
       </div>
     </div>
+
     <div class="col-md-4">
       <div class="card">
         <div class="card-body">
@@ -49,17 +53,22 @@
           <hr>
           <div class="card-body colContent">
             <ul class="list-group">
-              <li class="list-group-item d-flex justify-content-between align-items-center" [ngClass]="{'active': player.name == (ls.getItem('userName'))}" *ngFor="let player of playerList">
+              <li class="list-group-item d-flex justify-content-between align-items-center"
+                [ngClass]="{'active': player.name == (ls.getItem('userName'))}" *ngFor="let player of playerList">
                 <span *ngIf="(player.name === (ls.getItem('userName')))">{{player.name + ' (Tú)'}}</span>
 
-                <span *ngIf="(player.name !== (ls.getItem('userName')) && player.status === 'active')">{{player.name}}</span>
-                <span *ngIf="(player.name !== (ls.getItem('userName')) && player.status === 'away')" class="text-muted">{{player.name + ' (AFK)'}}</span>
-                <svg *ngIf="player.name == this.admin" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-megaphone-fill" viewBox="0 0 16 16">
-                  <path d="M13 2.5a1.5 1.5 0 0 1 3 0v11a1.5 1.5 0 0 1-3 0v-11zm-1 .724c-2.067.95-4.539 1.481-7 1.656v6.237a25.222 25.222 0 0 1 1.088.085c2.053.204 4.038.668 5.912 1.56V3.224zm-8 7.841V4.934c-.68.027-1.399.043-2.008.053A2.02 2.02 0 0 0 0 7v2c0 1.106.896 1.996 1.994 2.009a68.14 68.14 0 0 1 .496.008 64 64 0 0 1 1.51.048zm1.39 1.081c.285.021.569.047.85.078l.253 1.69a1 1 0 0 1-.983 1.187h-.548a1 1 0 0 1-.916-.599l-1.314-2.48a65.81 65.81 0 0 1 1.692.064c.327.017.65.037.966.06z"/>
+                <span
+                  *ngIf="(player.name !== (ls.getItem('userName')) && player.status === 'active')">{{player.name}}</span>
+                <span *ngIf="(player.name !== (ls.getItem('userName')) && player.status === 'away')"
+                  class="text-muted">{{player.name + ' (AFK)'}}</span>
+                <svg *ngIf="player.name == this.admin" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                  fill="currentColor" class="bi bi-megaphone-fill" viewBox="0 0 16 16">
+                  <path
+                    d="M13 2.5a1.5 1.5 0 0 1 3 0v11a1.5 1.5 0 0 1-3 0v-11zm-1 .724c-2.067.95-4.539 1.481-7 1.656v6.237a25.222 25.222 0 0 1 1.088.085c2.053.204 4.038.668 5.912 1.56V3.224zm-8 7.841V4.934c-.68.027-1.399.043-2.008.053A2.02 2.02 0 0 0 0 7v2c0 1.106.896 1.996 1.994 2.009a68.14 68.14 0 0 1 .496.008 64 64 0 0 1 1.51.048zm1.39 1.081c.285.021.569.047.85.078l.253 1.69a1 1 0 0 1-.983 1.187h-.548a1 1 0 0 1-.916-.599l-1.314-2.48a65.81 65.81 0 0 1 1.692.064c.327.017.65.037.966.06z" />
                 </svg>
               </li>
             </ul>
-          </div>   
+          </div>
           <hr>
           <div class="title">
             <button class="btn btn-danger" (click)="quitRoom()">Salir de la sala</button>
@@ -67,5 +76,19 @@
         </div>
       </div>
     </div>
-  </div>
-</div>
+
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <h2 class="title">Lista de Propuestas</h2>
+          <ul class="list-group">
+            <li class="list-group-item" *ngFor="let proposal of proposals">
+              <input class="form-check-input" type="radio" name="flexRadioDefault" id="{{proposal._id}}" (change)="checkProposalStatus($event);">
+              <label class="form-check-label" for="flexRadioDefault1">
+                <span> {{proposal.description}} </span>
+              </label>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
