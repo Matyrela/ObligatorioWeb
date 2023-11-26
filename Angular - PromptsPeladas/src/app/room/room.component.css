@@ -17,6 +17,12 @@
     border-radius: 5px;
 }
 
+.chatImage{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
 .roomData{
     text-align: center;
 

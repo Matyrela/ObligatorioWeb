@@ -13,7 +13,12 @@
           <div class="card-body colContent chat" id="chat">
             <div class="message text-muted" style="text-align: center;">-- Este es el inicio de la sala {{roomName}} --
             </div>
-            <div class="message" *ngFor="let message of chatMessages">{{message}}</div>
+            <div class="message" *ngFor="let message of chatMessages">
+              <p *ngIf="message.split(': !img:')[1] == undefined">{{ message }}</p>
+              <p *ngIf="message.split(': !img:')[1] != undefined"> {{ message.split('!img:')[0] }}</p>
+              <img *ngIf="message.split(': !img:')[1] != undefined" class="chatImage"
+                  src="{{message.split(': !img:')[1]}}">
+            </div>
           </div>
           <hr>
           <div class="input-group">
