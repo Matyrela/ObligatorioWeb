@@ -3,6 +3,7 @@ import { Player } from "./Classes/Player";
 import { GameManager } from "./Classes/GameManager";
 import { UserModel } from "./schemas/userSchema";
 import { Game } from "./Classes/Game";
+import { Auth } from "./Auth";
 
 const crypto = require('crypto');
 let sha256 = crypto.createHash('sha256');
@@ -179,7 +180,7 @@ export class UserHandler {
             res.send({ 'valid': false }).status(200);
         });
 
-        app.post('/api/user/game', (req, res) => {
+        app.post('/api/user/game', Auth.checkToken, (req, res) => {
             let player = req.body.player as unknown as Player;
             let code = GameManager.getInstance().checkPlayerInGame(player);
             res.send({ 'code': code });

@@ -38,8 +38,17 @@ export class GameComponent {
   constructor(private http: HttpClient, private router: Router) { }
 
   ngOnInit() {
-    this.http.post(env.baseURL + '/game/reconnect', { token: localStorage.getItem('token') }).subscribe((data: { [key: string]: any }) => {
-      console.log(data);
+    this.http.post(env.baseURL + '/game/reconnect', { token: localStorage.getItem('token') },{
+      headers: {
+        Authorization: 'Bearer ' + localStorage.getItem('token')
+      }
+    }).subscribe((data: { [key: string]: any }) => {
+      if(data['error'] == 'Token invalido'){
+        localStorage.removeItem('token');
+        localStorage.removeItem('userName');
+        this.router.navigate(['/login']);
+      }
+
       if (data['code'] != undefined && data['code'] != null && data['code'] != 'INVALID') {
         this.code = data['code'];
         this.connWebSocket();
@@ -134,7 +143,7 @@ export class GameComponent {
       console.log("stage" + data['stage'])
       this.voted = false;
       this.stage = data['stage'] as number;
-      if (this.stage == 2) {
+      if (this.stage === 2) {
         this.votationTime = true;
         this.answerTime = false;
         this.index = 0;
