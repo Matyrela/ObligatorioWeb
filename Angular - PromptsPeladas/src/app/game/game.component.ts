@@ -29,9 +29,9 @@ export class GameComponent {
   winnerPoints: number = 0;
 
   anwserSubmitted: boolean = false;
-  answerTime : boolean = true;
+  answerTime: boolean = true;
   votationTime: boolean = false;
-  winnerCheck : boolean = false;
+  winnerCheck: boolean = false;
 
   timer: string = "--";
   show: boolean = false;
@@ -57,7 +57,7 @@ export class GameComponent {
   submitAnswer() {
     this.anwserSubmitted = true;
     if (this.answer != "") {
-      this.ws.emit('submitAnswer', {'activities' : this.myActivities[this.stage] , 'userName': localStorage.getItem("userName"), 'answer': this.answer });
+      this.ws.emit('submitAnswer', { 'activities': this.myActivities[this.stage], 'userName': localStorage.getItem("userName"), 'answer': this.answer });
     }
 
     this.answer = "";
@@ -65,7 +65,7 @@ export class GameComponent {
 
   scorePoint(userName: string) {
     this.voted = true;
-    this.ws.emit('scorePoint', {'userName' : userName}); 
+    this.ws.emit('scorePoint', { 'userName': userName });
   }
 
   connWebSocket() {
@@ -88,42 +88,63 @@ export class GameComponent {
 
     this.ws.on('answerActivities', (data: { [key: string]: any }) => {
       let answers = data['answerActivities'] as any[];
+      console.log(answers);
       let toAnswer = data['toAnswer'] as number;
+      console.log(toAnswer);
       let i = 0;
+      let withoutUser: any[] = [];
+      let userId: any[] = [];
       //me quedo con las respuestas que debo votar (osea no las que corresponden a mis preguntas contestadas)
       while (i < answers.length) {
-        if(answers[i+1] == localStorage.getItem("userName")){
-          let id = answers[i]?._id;
-          answers.splice(i, 3);
-          answers.forEach(element => {
-            if (element._id == id) {
-              let index = answers.indexOf(element);
-              console.log(answers[index]);
-              console.log(answers[index+1]);
-              console.log(answers[index+2]);
-              answers.splice(index, 3);
-            }
-          });
+        if (answers[i + 1] == localStorage.getItem("userName")) {
+          userId.push(answers[i]._id);
         }
         i += 3;
       }
+      console.log(userId);
       i = 0;
+      while (i < answers.length) {
+        if (userId[0] != answers[i]._id && userId[1] != answers[i]._id && !withoutUser.includes(answers[i])) {
+          withoutUser.push(answers[i]);
+          withoutUser.push(answers[i + 1]);
+          withoutUser.push(answers[i + 2]);
+        }
+        i += 3; 
+      }
+
+
+      console.log('withoutUser');
+      console.log(withoutUser);
+      i = 0;
+      let id = "";
       //ordeno las respuestas por id para que tenga sentido la votacion
       while (this.answerActivities.length < toAnswer * 6) {
-        this.answerActivities.push(answers[i]);
-        this.answerActivities.push(answers[i + 1]);
-        this.answerActivities.push(answers[i + 2]);
-        let j = i+3;
-        while (j < answers.length) {
-          if (answers[j]._id == answers[i]._id) {
-            this.answerActivities.push(answers[j]);
-            this.answerActivities.push(answers[j + 1]);
-            this.answerActivities.push(answers[j + 2]);
+        this.answerActivities = withoutUser.copyWithin(0, 0, withoutUser.length);
+        let pasado = false;
+        while (i < withoutUser.length) {
+          pasado = false;
+          id = withoutUser[i]._id;
+          this.answerActivities[i] = withoutUser[i];
+          this.answerActivities[i + 1] = withoutUser[i + 1];
+          this.answerActivities[i + 2] = withoutUser[i + 2];
+
+          let j = i + 3;
+          while (j < withoutUser.length) {
+            if (withoutUser[j]._id == id) {
+              this.answerActivities[i + 3] = withoutUser[j];
+              this.answerActivities[i + 4] = withoutUser[j + 1];
+              this.answerActivities[i + 5] = withoutUser[j + 2];
+              pasado = true;
+              break;
+            }
+            j = (j + 3 >= withoutUser.length && !pasado) ? 0 : j + 3;
           }
-          j += 3;
+
+          i += 6;
         }
-        i += 3;
       }
+      console.log('answerActivities');
+      console.log(this.answerActivities);
     });
     this.ws.on('newStage', (data: { [key: string]: any }) => {
       this.show = true;
@@ -143,7 +164,7 @@ export class GameComponent {
         this.winnerCheck = false;
         this.index = 0;
       }
-      if (this.stage > 2){
+      if (this.stage > 2) {
         this.votationTime = true;
         this.answerTime = false;
         this.winnerCheck = false;
@@ -160,11 +181,11 @@ export class GameComponent {
       this.timer = data['timer'];
     });
 
-    this.ws.on("winner", (data: { [key: string]: any})=>{
+    this.ws.on("winner", (data: { [key: string]: any }) => {
       this.winner = data['playerWinner'];
       this.winnerPoints = data['points'];
 
-      if(this.winner != ''){
+      if (this.winner != '') {
         this.winnerSet();
       }
 
@@ -173,7 +194,7 @@ export class GameComponent {
     })
   }
 
-  winnerSet(){
+  winnerSet() {
     party.confetti(document.getElementsByTagName('body')[0] as HTMLElement, {
       count: party.variation.range(40, 80),
       spread: 50,
@@ -184,11 +205,11 @@ export class GameComponent {
 
   quitRoom() {
     this.http.post(env.baseURL + '/game/quit', {
-      token : localStorage.getItem('token')
+      token: localStorage.getItem('token')
     }).subscribe((data: { [key: string]: any }) => {
-      if(data['removed'] == true){
+      if (data['removed'] == true) {
         this.router.navigate(['menu']);
-      }else{
+      } else {
         console.log('Error al salir de la sala');
       }
     });
