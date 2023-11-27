@@ -72,7 +72,7 @@ export class Game {
             this.ws.of(this.url).emit("activityPlayer", {'activityPlayer' : this.activityPlayer});
             this.startAnswerTimer();
             return;
-          }, 5000);
+          }, 10000);
         }
       });
 

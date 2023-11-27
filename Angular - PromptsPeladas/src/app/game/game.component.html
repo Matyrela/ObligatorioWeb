@@ -2,9 +2,9 @@
   <div class="cortinaNumber">
     <div class="card text-center prompt">
       <div class="card-header">
-        <h1 class="promptText" id="prompt"> ❝ {{ myActivities[stage].description }} ❞</h1>
+        <h1 class="promptText" id="prompt"> ❝ {{ myActivities[stage]?.description }} ❞</h1>
         <hr class="promtsHr">
-        <p class="promptAuthor"> - {{ myActivities[stage].player_id }}</p>
+        <p class="promptAuthor"> - {{ myActivities[stage]?.player_id }}</p>
       </div>
     </div>
   </div>
@@ -18,9 +18,9 @@
       </div>
       <div class="card text-center prompt">
         <div class="card-header">
-          <h1 class="promptText">❝ {{ myActivities[stage].description }} ❞</h1>
+          <h1 class="promptText">❝ {{ myActivities[stage]?.description }} ❞</h1>
           <hr class="promtsHr">
-          <p class="promptAuthor">- {{ myActivities[stage].player_id }}</p>
+          <p class="promptAuthor">- {{ myActivities[stage]?.player_id }}</p>
         </div>
       </div>
       <br>
@@ -46,9 +46,9 @@
       </div>
       <div class="card text-center prompt">
         <div class="card-header">
-          <h1 class="promptText">❝ {{ answerActivities[index].description }} ❞</h1>
+          <h1 class="promptText">❝ {{ answerActivities[index]?.description }} ❞</h1>
           <hr class="promtsHr">
-          <p class="promptAuthor">- {{ answerActivities[index].player_id }}</p>
+          <p class="promptAuthor">- {{ answerActivities[index]?.player_id }}</p>
         </div>
       </div>
       <br>
@@ -87,7 +87,7 @@
   </div>
 </div>
 
-<div class="row" *ngIf="winnerCheck === true && votationTime === false">
+<div class="row" *ngIf="winnerCheck && winner != ''">
   <div class="col-lg-8 mx-auto">
     <div class="winnerScreen text-center">
       <div class="card">

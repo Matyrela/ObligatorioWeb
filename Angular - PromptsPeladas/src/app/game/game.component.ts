@@ -6,6 +6,7 @@ import { io } from "socket.io-client";
 import { Activity } from '../../app/clases/activity';
 
 import party from "party-js";
+import { Console } from 'console';
 
 @Component({
   selector: 'app-game',
@@ -101,11 +102,14 @@ export class GameComponent {
       //me quedo con las respuestas que debo votar (osea no las que corresponden a mis preguntas contestadas)
       while (i < answers.length) {
         if(answers[i+1] == localStorage.getItem("userName")){
-          let id = answers[i]?.id;
+          let id = answers[i]?._id;
           answers.splice(i, 3);
           answers.forEach(element => {
-            if (element.id == id) {
+            if (element._id == id) {
               let index = answers.indexOf(element);
+              console.log(answers[index]);
+              console.log(answers[index+1]);
+              console.log(answers[index+2]);
               answers.splice(index, 3);
             }
           });
@@ -114,13 +118,13 @@ export class GameComponent {
       }
       i = 0;
       //ordeno las respuestas por id para que tenga sentido la votacion
-      while (this.answerActivities.length < toAnswer * 3) {
+      while (this.answerActivities.length < toAnswer * 6) {
         this.answerActivities.push(answers[i]);
         this.answerActivities.push(answers[i + 1]);
         this.answerActivities.push(answers[i + 2]);
         let j = i+3;
         while (j < answers.length) {
-          if (answers[j].id == answers[i].id) {
+          if (answers[j]._id == answers[i]._id) {
             this.answerActivities.push(answers[j]);
             this.answerActivities.push(answers[j + 1]);
             this.answerActivities.push(answers[j + 2]);
@@ -129,7 +133,6 @@ export class GameComponent {
         }
         i += 3;
       }
-      console.log(this.answerActivities);
     });
     this.ws.on('newStage', (data: { [key: string]: any }) => {
       this.show = true;
@@ -146,10 +149,15 @@ export class GameComponent {
       if (this.stage === 2) {
         this.votationTime = true;
         this.answerTime = false;
+        this.winnerCheck = false;
         this.index = 0;
       }
-      if (this.stage > 2)
+      if (this.stage > 2){
+        this.votationTime = true;
+        this.answerTime = false;
+        this.winnerCheck = false;
         this.index += 6;
+      }
 
     });
 
