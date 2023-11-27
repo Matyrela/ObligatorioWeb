@@ -66,8 +66,34 @@ export class ProposalHandler {
         });
 
         app.get('/api/proposal/getAll', async (req, res) => {
-            let proposals = await ProposalModel.find({ enabled: true }).exec();
-            res.send({ 'proposals': proposals }).status(200);
+            try {
+                let proposals = await ProposalModel.aggregate([
+                    { $match: { enabled: true } },
+                    { $lookup: {
+                        from: 'users',
+                        localField: 'player_id',
+                        foreignField: '_id',
+                        as: 'player'
+                    }},
+                    { $unwind: '$player' },
+
+                    {
+                        $project: {
+                            _id: 1,
+                            description: 1,
+                            activityList: 1,
+                            'player.userName': 1,
+                            'player._id': 1
+                        }
+                    }
+                    
+                ]);
+                console.log(proposals);
+                res.json({ 'proposals': proposals }).status(200);
+            } catch (error) {
+                console.error(error);
+                res.status(500).json({ error: 'Something went wrong!' });
+            }
         });
 
 

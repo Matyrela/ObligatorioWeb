@@ -41,7 +41,7 @@ export class RoomComponent {
   selectedProposalID: any = null;
 
   ngOnInit() {
-    this.updateProposals();
+    this.updateProposalsAll();
     this.http.post(
       env.baseURL + '/game/get', {
       token: localStorage.getItem('token')
@@ -279,6 +279,14 @@ export class RoomComponent {
   updateProposals() {
     this.http.post(
       env.baseURL + '/proposal/get', { token: localStorage.getItem('token') }).subscribe((data: { [key: string]: any }) => {
+        console.log(data);
+        this.proposals = data['proposals'];
+      });
+  }
+
+  updateProposalsAll() {
+    this.http.get(
+      env.baseURL + '/proposal/getAll').subscribe((data: { [key: string]: any }) => {
         console.log(data);
         this.proposals = data['proposals'];
       });
