@@ -24,6 +24,8 @@ export class Game {
   stage: number = 0;
   timer: number = 30;
   votes: number = 0;
+
+  readys: string[] = [];
   constructor(name: string, id: string, ws: any) {
     this.activities = [];
 
@@ -67,13 +69,23 @@ export class Game {
           ws.of(this.url).emit("startGame");
 
           this.getActivities();
-          
-          setTimeout(() => {
+        }
+      });
+
+      socket.on("loadedGame", (data: { [key: string]: any }) => {
+        let playerName = data['userName'];
+
+        if (!this.readys.includes(playerName)) {
+          console.log("Loaded " + playerName)
+          this.readys.push(playerName);
+          this.ws.of(this.url).emit("readyPlayer", { 'actual': this.readys.length, 'needed': this.players.length });
+
+          if(this.readys.length == this.players.length){
             this.ws.of(this.url).emit("activityPlayer", {'activityPlayer' : this.activityPlayer});
             this.startAnswerTimer();
-            return;
-          }, 10000);
+          }
         }
+
       });
 
       socket.on("submitAnswer", (data: { [key: string]: any }) => {
