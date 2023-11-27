@@ -101,7 +101,6 @@ export class Game {
     if (this.stage == 2) {
       this.ws.of(this.url).emit("answerActivities", { "answerActivities": this.answers, "toAnswer": (this.maxActivities-2) });
     }
-
     if (this.stage == this.maxActivities) {
       this.gameWinner = Array.from(this.playerPoints.keys())[0];
       Array.from(this.playerPoints.keys()).forEach(element => {

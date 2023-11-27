@@ -49,38 +49,9 @@ export class GameComponent {
     });
 
     this.winner = "";
-
-    setTimeout(() => {
-      //PARTE 1: RESPONDER SI CONDICIONES = (votation == false && this.winner == '')
-      //PARTE 2: VOTAR SI CONDICIONES = (votation == true && winner == '')
-      //PARTE 3: MOSTRAR GANADOR SI CONDICIONES = (winner != '')
-
-      if(this.votation == false && this.winner == ''){
-        console.log("votation == false && this.winner == ''")
-        
-        console.log("VOTATION: " + this.votation);
-        console.log("WINNER: " + this.winner);
-
-        console.log("parte 1");
-      }
-      if(this.votation == true && this.winner == ''){
-        console.log("votation == true && this.winner == ''")
-
-        console.log("VOTATION: " + this.votation);
-        console.log("WINNER: " + this.winner);
-
-        console.log("parte 2");
-      }
-      if(this.winner != ''){
-        console.log("winner != ''")
-
-        console.log("WINNER: " + this.winner);
-
-        console.log("parte 3");
-      }
-      
-    }, 2000);
   }
+
+  voted: boolean = false;
 
   submitAnswer() {
     this.anwserSubmitted = true;
@@ -92,6 +63,7 @@ export class GameComponent {
   }
 
   scorePoint(userName: string) {
+    this.voted = true;
     this.ws.emit('scorePoint', {'userName' : userName}); 
   }
 
@@ -160,6 +132,7 @@ export class GameComponent {
 
     this.ws.on('stage', (data: { [key: string]: any }) => {
       console.log("stage" + data['stage'])
+      this.voted = false;
       this.stage = data['stage'] as number;
       if (this.stage == 2) {
         this.votationTime = true;
@@ -182,6 +155,7 @@ export class GameComponent {
     this.ws.on("winner", (data: { [key: string]: any})=>{
       this.winner = data['playerWinner'];
       this.winnerPoints = data['points'];
+
       if(this.winner != ''){
         this.winnerSet();
       }

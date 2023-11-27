@@ -86,18 +86,33 @@ export class RoomComponent {
     if (this.start)
       return;
 
-      if(this.selectedProposalID == "" || this.selectedProposalID == null){
-        Toastify({
-          text: "Debes seleccionar una propuesta",
-          duration: 3000,
-          gravity: "top",
-          position: "right",
-          style: {
-            background: "#ff0000",
-          },
-        }).showToast();
-        return;
+
+      if(this.admin == localStorage.getItem("userName")){
+        if((this.selectedProposalID == "" || this.selectedProposalID == null)){
+          Toastify({
+            text: "Debes seleccionar una propuesta",
+            duration: 3000,
+            gravity: "top",
+            position: "right",
+            style: {
+              background: "#ff0000",
+            },
+          }).showToast();
+          return;
+        }else if(this.playerList.length < 3){
+          Toastify({
+            text: "Debes tener al menos 3 jugadores",
+            duration: 3000,
+            gravity: "top",
+            position: "right",
+            style: {
+              background: "#ff0000",
+            },
+          }).showToast();
+          return;
+        }
       }
+      
 
     this.start = true;
     let selectedProposal = null;

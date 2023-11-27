@@ -64,9 +64,12 @@
               <button class="btn btn-success adminBtn left"
                 (click)=" this.startCountdown(3);">Iniciar juego
               </button>
-              <button class="btn btn-secondary adminBtn right"
-                (click)=" toggleProposals() ">Elegir Propuestas
+              <button *ngIf="!this.viewProposals" class="btn btn-secondary adminBtn right"
+                (click)="toggleProposals() ">Elegir Propuestas
               </button>
+              <button *ngIf="this.viewProposals" class="btn btn-danger adminBtn right"
+              (click)="toggleProposals() ">Cerrar Propuestas
+            </button>
             </div>
             <div *ngIf="(this.admin != (ls.getItem('userName')))">
               <h3>Esperando a que empiece...</h3>
@@ -79,7 +82,7 @@
     <div class="col-md-4">
       <div class="card">
         <div class="card-body">
-          <h2 class="title" >Jugadores - {{playerList.length}}</h2>
+          <h2 class="title" [ngClass]="{'colorRed': playerList.length < 3, 'colorGreen': playerList.length >= 3}" >Jugadores - {{playerList.length}}</h2>
           <hr>
           <div class="card-body colContent">
             <ul class="list-group">
