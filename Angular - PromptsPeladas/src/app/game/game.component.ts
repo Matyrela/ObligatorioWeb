@@ -39,17 +39,8 @@ export class GameComponent {
   constructor(private http: HttpClient, private router: Router) { }
 
   ngOnInit() {
-    this.http.post(env.baseURL + '/game/reconnect', { token: localStorage.getItem('token') },{
-      headers: {
-        Authorization: 'Bearer ' + localStorage.getItem('token')
-      }
-    }).subscribe((data: { [key: string]: any }) => {
-      if(data['error'] == 'Token invalido'){
-        localStorage.removeItem('token');
-        localStorage.removeItem('userName');
-        this.router.navigate(['/login']);
-      }
-
+    this.http.post(env.baseURL + '/game/reconnect', { token: localStorage.getItem('token') }).subscribe((data: { [key: string]: any }) => {
+      console.log(data);
       if (data['code'] != undefined && data['code'] != null && data['code'] != 'INVALID') {
         this.code = data['code'];
         this.connWebSocket();
@@ -113,22 +104,19 @@ export class GameComponent {
       console.log(userId);
       i = 0;
       while (i < answers.length) {
-        if (userId[0] != answers[i]._id && userId[1] != answers[i]._id && !withoutUser.includes(answers[i])) {
+        if (userId[0] != answers[i]._id || userId[1] != answers[i]._id) {
           withoutUser.push(answers[i]);
           withoutUser.push(answers[i + 1]);
           withoutUser.push(answers[i + 2]);
         }
-        i += 3; 
+        i += 3;
       }
 
-
-      console.log('withoutUser');
-      console.log(withoutUser);
       i = 0;
       let id = "";
       //ordeno las respuestas por id para que tenga sentido la votacion
+      this.answerActivities = withoutUser.copyWithin(0, 0, withoutUser.length);
       while (this.answerActivities.length < toAnswer * 6) {
-        this.answerActivities = withoutUser.copyWithin(0, 0, withoutUser.length);
         let pasado = false;
         while (i < withoutUser.length) {
           pasado = false;
