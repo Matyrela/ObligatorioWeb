@@ -62,6 +62,7 @@ export class Game {
       });
 
       socket.on("startGame", (data: { [key: string]: any }) => {
+        this.stage = 0;
         if (data['name'] == this.adminPlayer) {
           this.started = true;
           this.activities = data['proposal'].activityList
