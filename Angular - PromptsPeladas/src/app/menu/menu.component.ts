@@ -141,7 +141,12 @@ export class MenuComponent {
     this.http.post(env.baseURL + '/game/create', {
       token: token,
       roomName: name
-    }).subscribe((data: { [key: string]: any }) => {
+    }, {
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    }
+    ).subscribe((data: { [key: string]: any }) => {
       if(data['gameCreated']){
         Toastify({
           text: `¡Sala ${name} creada!`,
@@ -209,6 +214,10 @@ export class MenuComponent {
       this.http.post(env.baseURL + '/game/join', {  
         token: token,
         code: code
+      }, {
+        headers: {
+          Authorization: 'Bearer ' + token
+        }
       }).subscribe((data: { [key: string]: any }) => {
         if(data['joined'] == true){
           Toastify({

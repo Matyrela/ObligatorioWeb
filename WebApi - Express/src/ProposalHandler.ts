@@ -1,10 +1,8 @@
 import { Activity } from "./Classes/Activity";
-import { Proposal } from "./Classes/Proposal";
 import { Express } from 'express';
-import { UserHandler } from "./UserHandler";
-import { Player } from "./Classes/Player";
 import { UserModel } from "./schemas/userSchema";
 import { ProposalModel } from "./schemas/proposalSchema";
+import { Auth } from "./Auth";
 
 
 export class ProposalHandler {
@@ -16,7 +14,7 @@ export class ProposalHandler {
     activityList: Activity[] = [];
 
     constructor(app: Express) {
-        app.post('/api/proposal/create', async (req, res) => {
+        app.post('/api/proposal/create', Auth.checkToken, async (req, res) => {
             let token = req.body.token as string;
             const playerDB = await UserModel.find({ userToken: token }).exec();
             let player_id = playerDB?.[0]?._id;
@@ -42,7 +40,7 @@ export class ProposalHandler {
 
         });
 
-        app.put('/api/proposal/remove', async (req, res) => {
+        app.put('/api/proposal/remove', Auth.checkToken, async (req, res) => {
             try {
                 const id = req.body.id as string;
                 console.log("id:", id);
@@ -55,7 +53,7 @@ export class ProposalHandler {
             }
         });
 
-        app.post('/api/proposal/get', async (req, res) => {
+        app.post('/api/proposal/get', Auth.checkToken, async (req, res) => {
             let playerDB = await UserModel.findOne({ userToken: req.body.token }).exec();
             if (playerDB != null) {
                 let proposals = await ProposalModel.find({ enabled: true, player_id: playerDB._id }).exec();
@@ -65,7 +63,7 @@ export class ProposalHandler {
             }
         });
 
-        app.get('/api/proposal/getAll', async (req, res) => {
+        app.get('/api/proposal/getAll', Auth.checkToken, async (req, res) => {
             try {
                 let proposals = await ProposalModel.aggregate([
                     { $match: { enabled: true } },

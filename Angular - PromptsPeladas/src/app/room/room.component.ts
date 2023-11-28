@@ -40,14 +40,24 @@ export class RoomComponent {
   proposals: any[] = [];
   selectedProposalID: any = null;
 
+  mp3: HTMLAudioElement = new Audio('assets/sound/life.mp3');
+
   ngOnInit() {
     this.updateProposalsAll();
     this.http.post(
       env.baseURL + '/game/get', {
       token: localStorage.getItem('token')
+    },{
+      headers: {
+        Authorization: 'Bearer ' + localStorage.getItem('token')
+      }
     }).subscribe((data: { [key: string]: any }) => {
 
-      console.log(data);
+      if(data['error'] == 'Token invalido'){
+        localStorage.removeItem('token');
+        localStorage.removeItem('userName');
+        this.router.navigate(['/login']);
+      }
 
       this.code = data['code'];
       this.roomName = data['roomName'];
@@ -113,7 +123,10 @@ export class RoomComponent {
         }
       }
       
-
+    
+    if(this.mp3.paused == false){
+      this.mp3.pause();
+    }
     this.start = true;
     let selectedProposal = null;
     this.proposals.forEach(proposal => {
@@ -265,6 +278,11 @@ export class RoomComponent {
       } else if (data["message"] == "30") {
         var audio = new Audio('assets/sound/wololo.mp3');
         audio.play();
+      }else if(data["message"] == "!img:https://media.tenor.com/tC5i46ntiDsAAAAd/life-could-be-a-dream.gif"){
+        this.mp3.currentTime = 0;
+        if(this.mp3.paused){
+          this.mp3.play();
+        }
       }
       //END CHAT COMMANDS
 
@@ -293,7 +311,11 @@ export class RoomComponent {
 
   updateProposals() {
     this.http.post(
-      env.baseURL + '/proposal/get', { token: localStorage.getItem('token') }).subscribe((data: { [key: string]: any }) => {
+      env.baseURL + '/proposal/get', { token: localStorage.getItem('token') }, {
+        headers: {
+          Authorization: 'Bearer ' + localStorage.getItem('token')
+        }
+      }).subscribe((data: { [key: string]: any }) => {
         console.log(data);
         this.proposals = data['proposals'];
       });
@@ -301,7 +323,11 @@ export class RoomComponent {
 
   updateProposalsAll() {
     this.http.get(
-      env.baseURL + '/proposal/getAll').subscribe((data: { [key: string]: any }) => {
+      env.baseURL + '/proposal/getAll',{
+        headers: {
+          Authorization: 'Bearer ' + localStorage.getItem('token')
+        }
+      }).subscribe((data: { [key: string]: any }) => {
         console.log(data);
         this.proposals = data['proposals'];
       });
@@ -324,8 +350,15 @@ export class RoomComponent {
   quitRoom() {
     this.http.post(env.baseURL + '/game/quit', {
       token: localStorage.getItem('token')
+    },{
+      headers: {
+        Authorization: 'Bearer ' + localStorage.getItem('token')
+      }
     }).subscribe((data: { [key: string]: any }) => {
       if (data['removed'] == true) {
+        if(this.mp3.paused == false){
+          this.mp3.pause();
+        }
         this.router.navigate(['menu']);
       } else {
         Toastify({

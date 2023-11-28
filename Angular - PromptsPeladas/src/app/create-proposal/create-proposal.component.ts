@@ -45,7 +45,11 @@ export class CreateProposalComponent {
     console.log("actividades: ", this.checkedActivities);
     
     this.http.post(
-      env.baseURL + '/proposal/create', { description: this.description, token: localStorage.getItem('token'), activityList: this.checkedActivities }).subscribe((data: { [key: string]: any }) => {
+      env.baseURL + '/proposal/create', { description: this.description, token: localStorage.getItem('token'), activityList: this.checkedActivities },{
+        headers: {
+          Authorization: 'Bearer ' + localStorage.getItem('token')
+        }
+      }).subscribe((data: { [key: string]: any }) => {
         console.log(data);
         this.updateProposals();
       });
@@ -53,7 +57,11 @@ export class CreateProposalComponent {
 
   removeProposal(id: string) {
     this.http.put(
-      env.baseURL + '/proposal/remove', { id: id }).subscribe((data: { [key: string]: any }) => {
+      env.baseURL + '/proposal/remove', { id: id },{
+        headers: {
+          Authorization: 'Bearer ' + localStorage.getItem('token')
+        }
+      }).subscribe((data: { [key: string]: any }) => {
         this.updateProposals();
       });
   }

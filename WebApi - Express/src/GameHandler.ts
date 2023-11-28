@@ -2,12 +2,13 @@ import { Express } from 'express';
 import { GameManager } from './Classes/GameManager';
 import { Player } from './Classes/Player';
 import { UserHandler } from './UserHandler';
+import { Auth } from './Auth';
 
 
 export class GameHandler {
     constructor(app: Express, ws: any) {
 
-        app.post('/api/game/create', async (req, res) => {
+        app.post('/api/game/create', Auth.checkToken, async (req, res) => {
             let roomGame = req.body.roomName as string;
             let token: string = req.body.token as string;
             let user = await UserHandler.getInstance().getUserByToken(token);
@@ -27,7 +28,7 @@ export class GameHandler {
             res.send({ 'gameCreated': false, 'code': 'INVALID' });
         });
 
-        app.post('/api/game/join', async (req, res) => {
+        app.post('/api/game/join', Auth.checkToken, async (req, res) => {
             let code = req.body.code as string;
             let token = req.body.token as string;
             if (code != null && code != "" && code != undefined && code.toString().length > 0) {
@@ -48,7 +49,7 @@ export class GameHandler {
             res.send({ 'joined': false });
         });
 
-        app.post('/api/game/get', async (req, res) => {
+        app.post('/api/game/get', Auth.checkToken, async (req, res) => {
             let token = req.body.token as string;
             let user = await UserHandler.getInstance().getUserByToken(token);
             let player: null | Player = new Player(user[0].userName as string);
@@ -70,7 +71,7 @@ export class GameHandler {
             res.send({ 'code': 'INVALID' });
         });
 
-        app.post('/api/game/reconnect', async (req, res) => {
+        app.post('/api/game/reconnect', Auth.checkToken, async (req, res) => {
             let token = req.body.token as string;
             let player = await UserHandler.getInstance().getPlayer(token);
             let gm = GameManager.getInstance();
@@ -87,7 +88,7 @@ export class GameHandler {
             res.send({ 'code': 'INVALID' });
         });
 
-        app.post('/api/game/quit', async (req, res) => {
+        app.post('/api/game/quit', Auth.checkToken, async (req, res) => {
             let token = req.body.token as string;
             let player = await UserHandler.getInstance().getPlayer(token);
             let gm = GameManager.getInstance();

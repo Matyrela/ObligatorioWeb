@@ -1,9 +1,8 @@
 import { Express } from 'express';
-import { Activity } from "./Classes/Activity";
 import { UserHandler } from './UserHandler';
-import { Player } from './Classes/Player';
 import { ActivityModel } from "./schemas/activitySchema";
 import { UserModel } from './schemas/userSchema';
+import { Auth } from './Auth';
 
 
 export class ActivityHandler {
@@ -14,7 +13,7 @@ export class ActivityHandler {
 
     constructor(app: Express) {
 
-        app.post('/api/activity/get', async (req, res) => {
+        app.post('/api/activity/get', Auth.checkToken, async (req, res) => {
             let playerDB = await UserModel.findOne({ userToken: req.body.token }).exec();
             if (playerDB != null) {
                 let activities = await ActivityModel.find({ enabled: true, player_id: playerDB._id }).exec();
@@ -26,18 +25,18 @@ export class ActivityHandler {
             return;
         });
 
-        app.get('/api/activity/getAll', async (req, res) => {
+        app.get('/api/activity/getAll', Auth.checkToken, async (req, res) => {
             let activities = await ActivityModel.find({ enabled: true }).exec();
             res.send({ 'activities': activities }).status(200);
         });
 
-        app.post('/api/activity/getPlayerByID', async (req, res) => {
+        app.post('/api/activity/getPlayerByID', Auth.checkToken, async (req, res) => {
             let playerID = req.body.playerID as string;
             let player = await UserHandler.getInstance().getPlayerByID(playerID);
             res.send({ 'player': player }).status(200);
         });
 
-        app.post('/api/activity/create', async (req, res) => {
+        app.post('/api/activity/create', Auth.checkToken, async (req, res) => {
             let token = req.body.token as string;
             let description = req.body.description as string;
             const playerDB = await UserModel.find({ userToken: token }).exec();
@@ -64,7 +63,7 @@ export class ActivityHandler {
             return;
         });
 
-        app.put('/api/activity/remove', async (req, res) => {
+        app.put('/api/activity/remove', Auth.checkToken, async (req, res) => {
             try {
                 const id = req.body.id as number;
                 const activity = await ActivityModel.findOneAndUpdate({ _id: id }, { enabled: false }, { new: true });
