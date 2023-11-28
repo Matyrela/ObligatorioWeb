@@ -39,7 +39,13 @@ export class GameComponent {
   constructor(private http: HttpClient, private router: Router) { }
 
   ngOnInit() {
-    this.http.post(env.baseURL + '/game/reconnect', { token: localStorage.getItem('token') }).subscribe((data: { [key: string]: any }) => {
+    this.http.post(env.baseURL + '/game/reconnect', 
+    { token: localStorage.getItem('token') },{
+      headers: {
+        Authorization: 'Bearer ' + localStorage.getItem('token')
+      }
+    },
+    ).subscribe((data: { [key: string]: any }) => {
       console.log(data);
       if (data['code'] != undefined && data['code'] != null && data['code'] != 'INVALID') {
         this.code = data['code'];
@@ -203,6 +209,10 @@ export class GameComponent {
   quitRoom() {
     this.http.post(env.baseURL + '/game/quit', {
       token: localStorage.getItem('token')
+    },{
+      headers: {
+        Authorization: 'Bearer ' + localStorage.getItem('token')
+      }
     }).subscribe((data: { [key: string]: any }) => {
       if (data['removed'] == true) {
         this.router.navigate(['menu']);
