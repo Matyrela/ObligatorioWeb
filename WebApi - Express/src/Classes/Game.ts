@@ -9,15 +9,15 @@ export class Game {
   status: Status;
   adminPlayer!: string;
   maxActivities: number = 0;
-  playerPoints : Map<string,number> = new Map<string,number>();
-  gameWinner : string = "";
-  winnerPoints : number = 0;
+  playerPoints: Map<string, number> = new Map<string, number>();
+  gameWinner: string = "";
+  winnerPoints: number = 0;
 
   ws: any;
   url: string = "";
 
   activities: Activity[] = [];
-  activityPlayer : any[] = [];
+  activityPlayer: any[] = [];
   answers: any[] = [];
   public started: boolean = false;
 
@@ -66,7 +66,6 @@ export class Game {
         if (data['name'] == this.adminPlayer) {
           this.started = true;
           this.activities = data['proposal'].activityList
-          console.log(data['proposal'])
           ws.of(this.url).emit("startGame");
 
           this.getActivities();
@@ -81,8 +80,8 @@ export class Game {
           this.readys.push(playerName);
           this.ws.of(this.url).emit("readyPlayer", { 'actual': this.readys.length, 'needed': this.players.length });
 
-          if(this.readys.length == this.players.length){
-            this.ws.of(this.url).emit("activityPlayer", {'activityPlayer' : this.activityPlayer});
+          if (this.readys.length == this.players.length) {
+            this.ws.of(this.url).emit("activityPlayer", { 'activityPlayer': this.activityPlayer });
             this.startAnswerTimer();
           }
         }
@@ -100,31 +99,33 @@ export class Game {
       });
 
       socket.on("scorePoint", (data: { [key: string]: any }) => {
-          let name = data['userName'];
-          //suma un punto a la persona que gano
-          let points = this.playerPoints.get(name);
-          if (points != undefined){
-            this.playerPoints.set(name,points+1); 
-          }
-        });
+        let name = data['userName'];
+        //suma un punto a la persona que gano
+        let points = this.playerPoints.get(name);
+        if (points != undefined) {
+          this.playerPoints.set(name, points + 1);
+        }
+      });
     });
   }
 
   public startAnswerTimer() {
     if (this.stage == 2) {
-      this.ws.of(this.url).emit("answerActivities", { "answerActivities": this.answers, "toAnswer": (this.maxActivities-2) });
+      this.ws.of(this.url).emit("answerActivities", { "answerActivities": this.answers, "toAnswer": (this.maxActivities - 2) });
     }
+    console.log(this.stage);
+    console.log(this.maxActivities)
     if (this.stage == this.maxActivities) {
       this.gameWinner = Array.from(this.playerPoints.keys())[0];
       Array.from(this.playerPoints.keys()).forEach(element => {
         let points = this.playerPoints.get(element);
-        if (points != undefined){
-          if (points > this.winnerPoints){
+        if (points != undefined) {
+          if (points > this.winnerPoints) {
             this.gameWinner = element;
             this.winnerPoints = points;
           }
         }
-        
+
       });
       console.log('Winner: ' + this.gameWinner + 'Con ' + this.winnerPoints + ' puntos');
       this.players.forEach(element => {
@@ -133,9 +134,8 @@ export class Game {
       this.ws.of(this.url).emit("winner", { "playerWinner": this.gameWinner, "points": this.winnerPoints })
 
       return;
-    } 
-
-    else {
+    } else {
+      console.log("Stage: " + this.stage);
       this.ws.of(this.url).emit("newStage");
       this.ws.of(this.url).emit("stage", { "stage": this.stage });
       let x = setInterval(() => {
@@ -153,13 +153,13 @@ export class Game {
           }, 2000);
         }
 
-        }, 1000);
+      }, 1000);
     }
   }
   public addPlayer(player: Player) {
     if (this.players.length == 0) this.adminPlayer = player.name;
     this.players.push(player.name);
-    this.playerPoints.set(player.name,0);
+    this.playerPoints.set(player.name, 0);
   }
 
   public removePlayer(player: Player) {
@@ -168,7 +168,7 @@ export class Game {
     this.players = this.players.filter((pl) => {
       return pl !== player.name;
     });
-    
+
 
     if (player.name === this.adminPlayer) {
       if (this.players.length > 0) {
@@ -180,8 +180,8 @@ export class Game {
     this.ws.of(this.url).emit("playerList", this.players);
 
     setTimeout(() => {
-      if (adminWasChanged){
-        this.ws.of(this.url).emit("adminChange", {'name': this.adminPlayer});
+      if (adminWasChanged) {
+        this.ws.of(this.url).emit("adminChange", { 'name': this.adminPlayer });
       }
     }, 1000);
 
@@ -198,7 +198,7 @@ export class Game {
   private getActivities() {
     Utils.shuffle(this.players);
     Utils.shuffle(this.activities);
-  
+
     //this.maxActivities = Math.min(this.players.length, this.activities.length);
     this.maxActivities = this.players.length;
     //this.ws.of(this.url).emit("maxActivities", { 'maxActivities': this.maxActivities });
@@ -207,9 +207,9 @@ export class Game {
       this.activityPlayer.push(this.activities[i])
       this.activityPlayer.push(this.players[i])
       this.activityPlayer.push(this.players[j])
-      }
     }
   }
+}
 
 export enum Status {
   WAITING,

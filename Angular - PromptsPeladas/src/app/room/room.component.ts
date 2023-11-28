@@ -130,7 +130,6 @@ export class RoomComponent {
     this.start = true;
     let selectedProposal = null;
     this.proposals.forEach(proposal => {
-      console.log(proposal._id + ' pelelaaaa' + this.selectedProposalID);
       if (proposal._id == this.selectedProposalID) {
         selectedProposal = proposal;
         return;
