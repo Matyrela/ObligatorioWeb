@@ -105,9 +105,9 @@ export class GameComponent {
       i = 0;
       while (i < answers.length) {
         if (userId[0] != answers[i]._id && userId[1] != answers[i]._id && !withoutUser.includes(answers[i])) {
-          withoutUser.push(answers[i]);
-          withoutUser.push(answers[i + 1]);
-          withoutUser.push(answers[i + 2]);
+          withoutUser = withoutUser.concat(answers[i]);
+          withoutUser = withoutUser.concat(answers[i + 1]);
+          withoutUser = withoutUser.concat(answers[i + 2]);
         }
         i += 3; 
       }
